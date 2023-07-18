@@ -1,0 +1,13 @@
+[core]
+	editor = \"C:\\Users\\htpbm\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code\" --wait
+[credential "https://github.com"]
+	helper = 
+	helper = !'C:\\Program Files\\GitHub CLI\\gh.exe' auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !'C:\\Program Files\\GitHub CLI\\gh.exe' auth git-credential
+[safe]
+	directory = 'C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp'
+[user]
+	email = williamljosyn@gmail.com
+	name = William L Joslyn
