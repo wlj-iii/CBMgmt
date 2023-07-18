@@ -4,12 +4,12 @@
   "description": "Google Workspace-based Asset Manager",
   "main": "event-handler-(START-HERE).js",
   "scripts": {
-    "clasp/dev": "npx clasp-env P:\\CBMgmt\\gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay",
-    "push/dev": "npx clasp-env P:\\CBMgmt\\gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay && cd P:\\CBMgmt\\gas && clasp push -w",
-    "clasp/stage": "npx clasp-env P:\\CBMgmt\\gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y",
-    "push/stage": "npx clasp-env P:\\CBMgmt\\gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y && cd P:\\CBMgmt\\gas && clasp push -w",
-    "clasp/prod": "npx clasp-env P:\\CBMgmt\\gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_",
-    "push/prod": "npx clasp-env P:\\CBMgmt\\gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd P:\\CBMgmt\\gas && clasp push -w"
+    "clasp/dev": "npx clasp-env --folder gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay",
+    "push/dev": "npx clasp-env --folder gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay && cd P:\\CBMgmt\\gas && clasp push -w",
+    "clasp/stage": "npx clasp-env --folder gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y",
+    "push/stage": "npx clasp-env --folder gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y && cd P:\\CBMgmt\\gas && clasp push -w",
+    "clasp/prod": "npx clasp-env --folder gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_",
+    "push/prod": "npx clasp-env --folder gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd P:\\CBMgmt\\gas && clasp push -w"
   },
   "repository": {
     "type": "git",
