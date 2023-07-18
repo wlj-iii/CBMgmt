@@ -1,3 +1,4 @@
 **/.gitconfig
 **/.clasprsc
 **/gas/.clasp.json
+**/node_modules/

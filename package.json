@@ -30,5 +30,11 @@
   "bugs": {
     "url": "https://github.com/wlj-iii/CBMgmt/issues"
   },
-  "homepage": "https://github.com/wlj-iii/CBMgmt#readme"
+  "homepage": "https://github.com/wlj-iii/CBMgmt#readme",
+  "dependencies": {
+    "@google/clasp": "^2.4.2"
+  },
+  "devDependencies": {
+    "jshint": "^2.13.6"
+  }
 }
