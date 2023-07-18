@@ -1,0 +1,23 @@
+{
+  "name": "cbmgmt",
+  "version": "2.9.1",
+  "description": "Google Workspace-based Asset Manager",
+  "main": "event-handler-(START-HERE).js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wlj-iii/CBMgmt.git"
+  },
+  "keywords": [
+    "clasp",
+    "google-apps-script"
+  ],
+  "author": "WLJ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wlj-iii/CBMgmt/issues"
+  },
+  "homepage": "https://github.com/wlj-iii/CBMgmt#readme"
+}
