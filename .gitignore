@@ -1,2 +1,3 @@
-.gitconfig
-.clasprsc
+**/.gitconfig
+**/.clasprsc
+**/.clasp.json

@@ -4,7 +4,12 @@
   "description": "Google Workspace-based Asset Manager",
   "main": "event-handler-(START-HERE).js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clasp/dev": "npx clasp-env P:\\CBMgmt\\gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay",
+    "push/dev": "npx clasp-env P:\\CBMgmt\\gas --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay && cd P:\\CBMgmt\\gas && clasp push -w",
+    "clasp/stage": "npx clasp-env P:\\CBMgmt\\gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y",
+    "push/stage": "npx clasp-env P:\\CBMgmt\\gas --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y && cd P:\\CBMgmt\\gas && clasp push -w",
+    "clasp/prod": "npx clasp-env P:\\CBMgmt\\gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_",
+    "push/prod": "npx clasp-env P:\\CBMgmt\\gas --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd P:\\CBMgmt\\gas && clasp push -w"
   },
   "repository": {
     "type": "git",
@@ -12,7 +17,13 @@
   },
   "keywords": [
     "clasp",
-    "google-apps-script"
+    "google",
+    "apps",
+    "script",
+    "sheets",
+    "forms",
+    "chromebooks",
+    "asset"
   ],
   "author": "WLJ",
   "license": "ISC",
