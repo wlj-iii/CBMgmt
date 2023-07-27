@@ -35,6 +35,19 @@ const MAIL = new (function () {
       })
     }
   };
+
+  this.error = (e) => {
+    if (!aliases.includes(maskAcc)) {
+      GmailApp.sendEmail(me, 'Alias not found', 'You should check the script and the account\'s settings to make sure you spelled the alias address correctly.');
+    } else {
+      let maskIndex = aliases.indexOf(maskAcc);
+      GmailApp.sendEmail(redirect, "CBMgmt is complaining", e, {
+        'from': aliases[maskIndex],
+        'name': maskName,
+        'replyTo': 'williamljoslyn@gmail.com',
+      })
+    }
+  }
 })();
 
 function diffUsers(retUsr, retDev, annotUsr) {

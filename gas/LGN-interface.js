@@ -3,7 +3,8 @@ const Reserves = SpreadsheetApp.getActive().getSheetByName('Reserves');
 const SickBay = SpreadsheetApp.getActive().getSheetByName('Sick Bay');
 const Boneyard = SpreadsheetApp.getActive().getSheetByName('Boneyard');
 const MissingInAction = SpreadsheetApp.getActive().getSheetByName('MIA');
-const inactiveOU = HouseRules.createTextFinder("Inactive OU").findNext().offset(0, 1).getValue()
+const inactiveOU = HouseRules.createTextFinder("Inactive OU").findNext().offset(0, 1).getValue();
+const inactiveOuId = SpreadsheetApp.getActive().getSheetByName("House Rules").createTextFinder("Inactive OU ID").findNext().offset(0, 1).getValue();
 
 let legions = [ActiveDuty, Reserves, SickBay, Boneyard, MissingInAction];
 
@@ -35,7 +36,8 @@ const LGN = new (function () {
     let newDevice = {
       "annotatedAssetId": `${deviceName} - RESERVES`,
       "annotatedUser": "",
-      "orgUnitPath": `${inactiveOU}`
+      "orgUnitPath": `${inactiveOU}`,
+      "orgUnitId": `${inactiveOuId}`
     }
 
     if (explanation) {
@@ -81,6 +83,7 @@ const LGN = new (function () {
       "annotatedAssetId": `${deviceName} Marked AWOL ${dateMissing}`,
       "annotatedUser": "",
       "orgUnitPath": `${inactiveOU}`,
+      "orgUnitId": `${inactiveOuId}`,
       "notes": `Last assigned to ${lastAsgn}` + '\u000D' + `Last used by ${lastUser} on ${lastUsed}`
     }
 

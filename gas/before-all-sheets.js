@@ -18,3 +18,9 @@ var header = Current.getRange(1, 1, 1, Current.getLastColumn())
   .findNext();
 return header.getColumn();
 }
+
+function latestFirst(sheet) {
+  SpreadsheetApp.setActiveSheet(sheet);
+  let timeIndex = findHeader('Timestamp');
+  sheet.sort(timeIndex, false);
+};
