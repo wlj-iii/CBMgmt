@@ -16,6 +16,10 @@ function checkIn(e) {
         ACC.removeCharger(retMail)
     }
 
+    if (items.includes("Hotspot")) {
+        ACC.removeHotspot(hsAssetTag)
+    }
+    
     if (cbAssetTag != "") {
         try {
           Logger.log(cbAssetTag)

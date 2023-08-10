@@ -105,4 +105,8 @@ const LGN = new (function () {
     MissingInAction.moveRows(MissingInAction.getRange(MissingInAction.getLastRow(), 1, 1, 1), 2)
     MissingInAction.getRange(2, 2, 1, 1).setFormula(formulas);
   };
+
+  this.sickBay = (cbAssetTag, explanation) => {
+    
+  }
 })();

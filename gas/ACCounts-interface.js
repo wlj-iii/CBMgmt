@@ -164,6 +164,26 @@ const ACC = new (function () {
             .trim()
         )
         .setNumberFormat(["MM/DD/YY"]);
+    } else {
+      // TODO: bulk user -1 charger
+    }
+  };
+
+  this.removeHotspot = (assetTag) => {
+    if (!this.isBulkUser(email)) {
+      // labelled singular account for most commmon case, however works on any accountS found
+      let currentAccount = SingleAccounts.createTextFinder(assetTag)
+        .matchEntireCell(true)
+        .findAll();
+      for (let i = 0; i < currentAccount.length; i++) {
+        let foundUsr = currentAccount[i].getRow();
+        let foundDev = currentAccount[i].getColumn();
+
+        let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
+        nowDev.setValues([["", ""]]);
+      }
+    } else {
+      // TODO: bulk user -1 hotspot
     }
   };
 
@@ -227,8 +247,9 @@ const ACC = new (function () {
       let devsReport;
 
       for (let i = 0; i < 3; i++) {
-        let deviceCol = 2 * i + Number(findHeader("First Device Out", SingleAccounts));
-        let deviceName = userRow[deviceCol-1]
+        let deviceCol =
+          2 * i + Number(findHeader("First Device Out", SingleAccounts));
+        let deviceName = userRow[deviceCol - 1];
 
         let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toDateString();
         if (deviceDue == "Invalid Date") {
@@ -248,17 +269,17 @@ const ACC = new (function () {
       }
 
       let hotspotReport;
-      let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts))
-      let hotspotName = userRow[hotspotCol-1]
+      let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts));
+      let hotspotName = userRow[hotspotCol - 1];
       let hotspotDue = new Date(userRow[hotspotCol - 1 + 1]).toDateString();
 
       if (!hotspotName) {
-        hotspotReport = "no hotspot"
+        hotspotReport = "no hotspot";
       } else {
-        hotspotReport = hotspotName + " (due " + hotspotDue + ")"
+        hotspotReport = hotspotName + " (due " + hotspotDue + ")";
       }
 
-      let chgsDates = userRow[findHeader("Due (C)", SingleAccounts)-1]
+      let chgsDates = userRow[findHeader("Due (C)", SingleAccounts) - 1];
 
       if (!chgsDates) {
         numChgsOut = 0;
@@ -281,7 +302,8 @@ const ACC = new (function () {
       if (devsReport == "No devices" && hotspotReport == "no hotspot") {
         report = "\t" + devsReport + ", " + hotspotReport + ", " + chgsReport;
       } else {
-        report = "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
+        report =
+          "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
       }
 
       return report;
@@ -325,10 +347,13 @@ const ACC = new (function () {
       let devsReport;
 
       for (let i = 0; i < 3; i++) {
-        let deviceCol = 2 * i + Number(findHeader("First Device Out", SingleAccounts));
-        let deviceName = userRow[deviceCol-1]
+        let deviceCol =
+          2 * i + Number(findHeader("First Device Out", SingleAccounts));
+        let deviceName = userRow[deviceCol - 1];
 
-        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString("es-MX");
+        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString(
+          "es-MX"
+        );
         if (deviceDue == "Invalid Date") {
           deviceDue = "a fin de año";
         }
@@ -346,17 +371,19 @@ const ACC = new (function () {
       }
 
       let hotspotReport;
-      let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts))
-      let hotspotName = userRow[hotspotCol-1]
-      let hotspotDue = new Date(userRow[hotspotCol - 1 + 1]).toLocaleDateString("es-MX");
+      let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts));
+      let hotspotName = userRow[hotspotCol - 1];
+      let hotspotDue = new Date(userRow[hotspotCol - 1 + 1]).toLocaleDateString(
+        "es-MX"
+      );
 
       if (!hotspotName) {
-        hotspotReport = "sin puntos de accesso"
+        hotspotReport = "sin puntos de accesso";
       } else {
-        hotspotReport = hotspotName + " (vence al " + hotspotDue + ")"
+        hotspotReport = hotspotName + " (vence al " + hotspotDue + ")";
       }
 
-      let chgsDates = userRow[findHeader("Due (C)", SingleAccounts)-1]
+      let chgsDates = userRow[findHeader("Due (C)", SingleAccounts) - 1];
 
       if (!chgsDates) {
         numChgsOut = 0;
@@ -376,10 +403,14 @@ const ACC = new (function () {
         chgsReport = `y sin cargadores prestados`;
       }
 
-      if (devsReport == "Sin Chromebooks" && hotspotReport == "sin puntos de accesso") {
+      if (
+        devsReport == "Sin Chromebooks" &&
+        hotspotReport == "sin puntos de accesso"
+      ) {
         report = "\t" + devsReport + ", " + hotspotReport + ", " + chgsReport;
       } else {
-        report = "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
+        report =
+          "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
       }
 
       return report;
@@ -389,7 +420,7 @@ const ACC = new (function () {
   this.charge = (userMail, faultOrMiss, items, cost, category) => {
     let localCharge = [];
     let secretaryCharge = [];
-    let problem = engProb(faultOrMiss, items)
+    let problem = engProb(faultOrMiss, items);
 
     let locChargeFormula = `=if(indirect(address(row(), match(\"Resolved\", \$1:\$1, 0), 1)), 0, ${cost})`;
     let secretaryYear =
@@ -397,8 +428,9 @@ const ACC = new (function () {
     let secretaryDescription = `Tech - ${problem} ${secretaryYear} SY`;
 
     Charges.activate();
-    localCharge[findHeader("Student Full")-1] = AdminDirectory.Users.get(userMail).name.fullName;
-    Logger.log(localCharge[findHeader("Student Full")-1])
+    localCharge[findHeader("Student Full") - 1] =
+      AdminDirectory.Users.get(userMail).name.fullName;
+    Logger.log(localCharge[findHeader("Student Full") - 1]);
     localCharge[findHeader("Reason") - 1] = problem;
     localCharge[findHeader("Remaining Charge") - 1] = "";
     localCharge[findHeader("Resolved") - 1] = "FALSE";
@@ -413,18 +445,52 @@ const ACC = new (function () {
 
     Secretaries.activate();
     secretaryCharge[findHeader("Date Assessed", Secretaries) - 1] = new Date();
-    secretaryCharge[findHeader("Last", Secretaries) - 1] = AdminDirectory.Users.get(userMail).name.familyName;
-    secretaryCharge[findHeader("First", Secretaries) - 1] = AdminDirectory.Users.get(userMail).name.givenName;
+    secretaryCharge[findHeader("Last", Secretaries) - 1] =
+      AdminDirectory.Users.get(userMail).name.familyName;
+    secretaryCharge[findHeader("First", Secretaries) - 1] =
+      AdminDirectory.Users.get(userMail).name.givenName;
     secretaryCharge[findHeader("Total", Secretaries) - 1] = cost;
     secretaryCharge[findHeader("✔Paid", Secretaries) - 1] = "FALSE";
     secretaryCharge[findHeader("CK#/CASH", Secretaries) - 1] = "";
-    secretaryCharge[findHeader("Description", Secretaries) - 1] = secretaryDescription;
-    Secretaries.appendRow(secretaryCharge)
-      .sort(findHeader("Date Assessed", Secretaries), false)
+    secretaryCharge[findHeader("Description", Secretaries) - 1] =
+      secretaryDescription;
+    Secretaries.appendRow(secretaryCharge).sort(
+      findHeader("Date Assessed", Secretaries),
+      false
+    );
     Secretaries.getRange(2, 1, 1, Secretaries.getLastColumn()).setNumberFormats(
-      Secretaries.getRange(3, 1, 1, Secretaries.getLastColumn()).getNumberFormats()
+      Secretaries.getRange(
+        3,
+        1,
+        1,
+        Secretaries.getLastColumn()
+      ).getNumberFormats()
     );
 
-    MAIL.charge(userMail, faultOrMiss, items, cost, category)
+    MAIL.charge(userMail, faultOrMiss, items, cost, category);
+  };
+
+  this.removeStuDevice = (deviceTag) => {
+    // labelled singular account for most commmon case, however works on any accountS found
+    let currentAccount = SingleAccounts.createTextFinder(deviceTag)
+      .matchEntireCell(true)
+      .findAll();
+    for (let i = 0; i < currentAccount.length; i++) {
+      let foundUsr = currentAccount[i].getRow();
+      let foundDev = currentAccount[i].getColumn();
+
+      let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
+      let nextDev = SingleAccounts.getRange(
+        foundUsr,
+        foundDev + 2,
+        1,
+        SingleAccounts.getLastColumn() - foundDev + 1
+      );
+      if (!nextDev) {
+        nowDev.setValues([["", ""]]);
+      } else {
+        nextDev.moveTo(nowDev);
+      }
+    }
   };
 })();
