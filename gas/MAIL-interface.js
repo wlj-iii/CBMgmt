@@ -48,6 +48,8 @@ const MAIL = new (function () {
       })
     }
   }
+
+  this.inbound = (retMail, items, cbAssetTag)
 })();
 
 function diffUsers(retUsr, retDev, annotUsr) {

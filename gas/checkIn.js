@@ -3,7 +3,7 @@ function checkIn(e) {
     let items = namedValues["Returning Items"][0].split(", ");
     let retCategory = namedValues["Return Category"][0];
     let retMail = namedValues["Returner's Email"][0];
-    let cbAssetTag = namedValues["Lakers ####"][0];
+    let cbAssetTag = namedValues["Lakers ****"][0];
     Logger.log(cbAssetTag);
     let hsAssetTag = namedValues["Lakers ATT###"][0];
     let faulties = namedValues["Faulty Items"][0].split(", ");
@@ -17,22 +17,30 @@ function checkIn(e) {
     }
 
     if (items.includes("Hotspot")) {
-        ACC.removeHotspot(hsAssetTag)
+      if (ACC.isBulkUser(email)) {
+        // TODO: Bulk User Hotspot Check in
+      } else {
+        ACC.removeStuHotspot(hsAssetTag)
+      }
     }
     
     if (cbAssetTag != "") {
-        try {
-          Logger.log(cbAssetTag)
-          if (cbParts.some(v => faulties.includes(v))) {
-            LGN.sickBay(cbAssetTag, explanation)
-          } else {
-            LGN.reserves(cbAssetTag, explanation)
-          }
-        } catch (e) {
-          MAIL.error(e)
+      try {
+        Logger.log(cbAssetTag)
+        if (cbParts.some(v => faulties.includes(v))) {
+          LGN.sickBay(cbAssetTag, faulties, explanation)
+        } else {
+          LGN.reserves(cbAssetTag, explanation)
         }
-        try {
-          ACC.removeStuDevice(cbAssetTag)
+      } catch (e) {
+        MAIL.error(e)
+      }
+      try {
+          if (ACC.isBulkUser(email)) {
+            // TODO Bulk User CB Check In
+          } else {
+            ACC.removeStuDevice(cbAssetTag)
+          }
         } catch (e) {
           MAIL.error(e)
         }

@@ -81,8 +81,20 @@ function spanCat(category) {
   return spaCategory
 }
 
-function richTextify(range) {
-  let runs = range.getRichTextValues()[0][0].getRuns()
+function richTextify(range, multiCell) {
+  let runs = [];
+  if (multiCell) {
+    let richesArray = range.getRichTextValues()
+    for (let i = 0; i < richesArray.length; i++) {
+      for (let j = 0; j < richesArray[i].length; j++) {
+        richesArray[i][j].getRuns().forEach(run => {
+          runs.push(run)
+        })
+      }
+    }
+  } else {
+    runs = range.getRichTextValues()[0][0].getRuns()
+    }
   let runObjs = [];
 
   for (let i = 0; i < runs.length; i++) {
@@ -105,4 +117,10 @@ function richTextify(range) {
     runObjs.push(runObj)
   }
     return runObjs
+}
+
+function compareRichTexts(runObj1, runObj2) {
+  if (runObj1.color == runObj2.color && runObj1.font == runObj2.font && runObj1.fontsize == runObj2.fontsize && runObj1.styleBold == runObj2.styleBold && runObj1.styleItalic == runObj2.styleItalic && runObj1.stylesThru == runObj2.stylesThru && runObj1.styleUline == runObj2.styleUline) {
+    return true
+  } else return false
 }

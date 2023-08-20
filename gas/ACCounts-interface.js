@@ -169,21 +169,17 @@ const ACC = new (function () {
     }
   };
 
-  this.removeHotspot = (assetTag) => {
-    if (!this.isBulkUser(email)) {
-      // labelled singular account for most commmon case, however works on any accountS found
-      let currentAccount = SingleAccounts.createTextFinder(assetTag)
-        .matchEntireCell(true)
-        .findAll();
-      for (let i = 0; i < currentAccount.length; i++) {
-        let foundUsr = currentAccount[i].getRow();
-        let foundDev = currentAccount[i].getColumn();
-
-        let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
-        nowDev.setValues([["", ""]]);
-      }
-    } else {
-      // TODO: bulk user -1 hotspot
+  this.removeStuHotspot = (assetTag) => {
+    // labelled singular account for most commmon case, however works on any accountS found
+    let currentAccount = SingleAccounts.createTextFinder(assetTag)
+    .matchEntireCell(true)
+    .findAll();
+    for (let i = 0; i < currentAccount.length; i++) {
+      let foundUsr = currentAccount[i].getRow();
+      let foundDev = currentAccount[i].getColumn();
+      
+      let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
+      nowDev.setValues([["", ""]]);
     }
   };
 
@@ -471,7 +467,7 @@ const ACC = new (function () {
   };
 
   this.removeStuDevice = (deviceTag) => {
-    // labelled singular account for most commmon case, however works on any accountS found
+    // current account labelled singular for most commmon case, however works on any accountS found
     let currentAccount = SingleAccounts.createTextFinder(deviceTag)
       .matchEntireCell(true)
       .findAll();
@@ -494,3 +490,20 @@ const ACC = new (function () {
     }
   };
 })();
+
+function hasUnsentOverdue(accountRange) {
+  let dueNotSent = richTextify(HouseRules.getRange("B9"))[1]
+  let accountRuns = richTextify(accountRange, true)
+  if (accountRuns.some(runObj => compareRichTexts (runObj, dueNotSent))) {
+    return true
+  } else return false
+}
+
+function hasSentOverdue(accountRange) {
+  let dueAndSent = richTextify(HouseRules.getRange("B10"))[1]
+  let accountRuns = richTextify(accountRange, true)
+  if (accountRuns.some(runObj => compareRichTexts (runObj, dueAndSent))) {
+    return true
+  } else return false
+}
+

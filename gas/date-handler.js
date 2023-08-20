@@ -23,8 +23,8 @@ function getSY(date) {
     dateToTest = new Date(date)
   }
 
-  let boSyDate = new Date(SpreadsheetApp.getActive().getSheetByName('Speed Dating').createTextFinder('Beginning of Year').findNext().offset(0, 1).getValue())
-  let eoSyDate = new Date(SpreadsheetApp.getActive().getSheetByName('Speed Dating').createTextFinder('End of Year').findNext().offset(0, 1).getValue())
+  let boSyDate = new Date(DatesSheet.createTextFinder('Beginning of Year').findNext().offset(0, 1).getValue())
+  let eoSyDate = new Date(DatesSheet.createTextFinder('End of Year').findNext().offset(0, 1).getValue())
 
   if (dateToTest.getTime() < boSyDate.getTime() || dateToTest.getTime() >= eoSyDate.getTime()) {
     if (dateToTest.getMonth() >= 8) {
