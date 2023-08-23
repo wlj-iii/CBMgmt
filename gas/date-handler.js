@@ -1,6 +1,10 @@
-function dateToTwos(Date) {
-  let originalString = Date.toLocaleDateString()
-  let newString = originalString.substr(0, 4) + originalString.substr(6, originalString.length)
+function dateToTwos(input) {
+  let originalDate = new Date(new Date(input).setHours(12))
+  let month = (originalDate.getMonth()+1).toString().padStart(2, 0)
+  let day = originalDate.getDate().toString().padStart(2, 0)
+  let year = originalDate.getFullYear().toString().slice(2)
+
+  let newString = month + "/" + day + "/" + year 
   return newString
 }
 
@@ -10,7 +14,7 @@ function getLastTime(Device) {
     " at " +
     new Date(
       Device.activeTimeRanges[Device.activeTimeRanges.length - 1].activeTime
-    ).toTimeString();
+    ).toLocaleTimeString();
   return lastTime;
 }
 
@@ -47,7 +51,7 @@ function checkHoliday(date) {
   if (input.getDay() == 6) {
     input.setDate(input.getDate() + 2)
     checkHoliday(input)
-  } else if (input.getDay() == 7) {
+  } else if (input.getDay() == 0) {
     input.setDate(input.getDate() + 1)
     checkHoliday(input)
   }
@@ -73,7 +77,7 @@ function checkHoliday(date) {
     }
   }
 
-  return new Date(input).toISOString().substring(0, 10)
+  return dateToTwos(input)
 }
 
 function getDaysArray([start, end]) {

@@ -8,15 +8,16 @@
 <body>
   <div>
     Hello,
+    <?= eng.name ?>,
   </div>
   <div>
-    This message is because recently, you were found to have
+    This message is because recently, you were found to have a
     <?= eng.problem ?>,
     and this is to let you know that you have been assessed for
     $<?= eng.charge ?>
-    due to this, with respect to it being labelled as
-    <?= eng.category ?>.
-    This means that your outstanding balance is
+    due to this, with respect to it being labelled as a(n)
+    '<?= eng.category ?>'
+    Charge. This means that your outstanding balance is 
     $<?= eng.outstanding ?>,
     and your account will still show as having
   </div>
@@ -33,10 +34,11 @@
   <br>
   </br>
   <div>
-    Hola,
+    <?= spa.greeting ?>,
+    <?= spa.name ?>,
   </div>
   <div>
-    Este mensaje se debe a que recientemente se descubrió que
+    Le escribimos porque recientemente se descubrió que
     <?= spa.problem ?>,
     y esto es para informarle que se le ha evaluado por $
     <?= spa.charge ?>
@@ -50,9 +52,12 @@
     <?= spa.report ?>
   </div>
   <div>
-    Si tiene alguna pregunta sobre estos artículos, no dude en responder a este correo electrónico, y si tiene alguna
-    pregunta sobre el pago en particular, comuníquese con
-    <a href=mailto:dsegroves@lakerschools.org>David Segroves</a>.
+    Háganos saber si tiene alguna pregunta con respecto a los elementos mencionados respondiendo a este correo electrónico, y para
+    preguntas sobre el pago en particular, comuníquese con
+    <a href=mailto:dsegroves@lakerschools.org>David Segroves</a>. Quedamos a su disposición para cualquier aclaración.
+  </div>
+  <div>
+    Le saludamos atentamente, y muchas gracias por su tiempo.
   </div>
 
 </body>

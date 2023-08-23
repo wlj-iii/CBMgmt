@@ -1,4 +1,8 @@
 const ACC = new (function () {
+  this.fullName = (email) => {
+    return AdminDirectory.Users.get(email).name.fullName;
+  };
+
   this.isBulkUser = (email) => {
     let singleOuRow = HouseRules.getRange(1, 1, HouseRules.getLastRow(), 1)
       .createTextFinder("Single-Device OU's")
@@ -41,10 +45,35 @@ const ACC = new (function () {
     }
   };
 
+  this.isPayingUser = (email) => {
+    let payingOuRow = HouseRules.getRange(1, 1, HouseRules.getLastRow(), 1)
+      .createTextFinder("Paying OU's")
+      .findNext()
+      .getRow();
+    let payingOUs = HouseRules.getRange(
+      payingOuRow,
+      2,
+      1,
+      HouseRules.getLastColumn()
+    )
+      .getValues()[0]
+      .filter(function (e) {
+        return e;
+      });
+
+    let userOu = AdminDirectory.Users.get(email).orgUnitPath.toLowerCase();
+
+    if (payingOUs.some((v) => userOu.includes(v))) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   this.createSingleAcc = (email) => {
     let rowContents = [];
     rowContents.push(email);
-    rowContents.push(AdminDirectory.Users.get(email).name.fullName);
+    rowContents.push(this.fullName(email));
     rowContents.push("");
     for (let i = 0; i < 2; i++) {
       rowContents.push("0");
@@ -61,7 +90,7 @@ const ACC = new (function () {
   this.createBulkAcc = (email) => {
     let rowContents = [];
     rowContents.push(email);
-    rowContents.push(AdminDirectory.Users.get(email).name.fullName);
+    rowContents.push(this.fullName(email));
     rowContents.push("0");
     BulkAccounts.appendRow(rowContents);
     return BulkAccounts.getRange(
@@ -133,12 +162,7 @@ const ACC = new (function () {
     currChgsOut.setValue(Math.max(newNum, 0));
 
     if (!this.isBulkUser(email)) {
-      let chgsDueCol = account
-        .getSheet()
-        .getRange(1, 1, 1, account.getSheet().getLastColumn())
-        .createTextFinder("Due (C)")
-        .findNext()
-        .getColumn();
+      let chgsDueCol = findHeader("Due (C)", SingleAccounts);
 
       let datesList = SingleAccounts.getRange(
         account.getRow(),
@@ -169,15 +193,47 @@ const ACC = new (function () {
     }
   };
 
+  this.addCharger = (email, dueDate) => {
+    Logger.log(dueDate)
+    let account = this.getAccount(email);
+    let accountRow = account.getRow()
+    Logger.log("accVals = " + account.getValues())
+    let chgsOutCol = findHeader("Chargers Out", account.getSheet());
+    
+    let currChgsOut = account.getSheet().getRange(accountRow, chgsOutCol, 1, 1);
+    let newNum = currChgsOut.getValue() + 1;
+    Logger.log("new Number = " + newNum)
+    currChgsOut.setValue(newNum);
+
+    if (!this.isBulkUser(email)) {
+      let chgsDueCol = findHeader("Due (C)", SingleAccounts);
+
+
+      let datesList = SingleAccounts.getRange(accountRow, chgsDueCol, 1, 1);
+      Logger.log("dListCell = " + datesList.getA1Notation())
+      Logger.log("dList = " + datesList.getValue())
+      let currentDates = datesList.getValue().toString().trim().split(",")
+      Logger.log("pre:" + `\n` + currentDates)
+      currentDates.map((currentDate) => {new Date(currentDate)}).sort()
+      Logger.log("post:" + `\n` + currentDates)
+      currentDates.push(new Date(dueDate));
+      Logger.log("pushed:" + `\n` + currentDates)
+      datesList.setValue(currentDates.filter(function(el) { return el; }).map((currentDate) => dateToTwos(currentDate)).sort().join(", ").toString().trim())
+        .setNumberFormat(["MM/DD/YY"]);
+    } else {
+      // TODO: bulk user +1 charger
+    }
+  };
+
   this.removeStuHotspot = (assetTag) => {
     // labelled singular account for most commmon case, however works on any accountS found
     let currentAccount = SingleAccounts.createTextFinder(assetTag)
-    .matchEntireCell(true)
-    .findAll();
+      .matchEntireCell(true)
+      .findAll();
     for (let i = 0; i < currentAccount.length; i++) {
       let foundUsr = currentAccount[i].getRow();
       let foundDev = currentAccount[i].getColumn();
-      
+
       let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
       nowDev.setValues([["", ""]]);
     }
@@ -201,9 +257,9 @@ const ACC = new (function () {
 
   this.outstandingFines = (userMail) => {
     let userRow = this.getAccount(userMail);
-    var accountDevices = [];
-    var report;
-    let devsReport;
+    let outstanding =
+      userRow.getValues()[0][findHeader("Balance", SingleAccounts) - 1];
+    return outstanding;
   };
 
   this.report = (userMail) => {
@@ -424,9 +480,10 @@ const ACC = new (function () {
     let secretaryDescription = `Tech - ${problem} ${secretaryYear} SY`;
 
     Charges.activate();
-    localCharge[findHeader("Student Full") - 1] =
-      AdminDirectory.Users.get(userMail).name.fullName;
-    Logger.log(localCharge[findHeader("Student Full") - 1]);
+    let userFull = this.fullName(userMail);
+    // Logger.log(userFull);
+    localCharge[findHeader("Student Full") - 1] = userFull;
+    // Logger.log(localCharge[findHeader("Student Full") - 1]);
     localCharge[findHeader("Reason") - 1] = problem;
     localCharge[findHeader("Remaining Charge") - 1] = "";
     localCharge[findHeader("Resolved") - 1] = "FALSE";
@@ -466,6 +523,36 @@ const ACC = new (function () {
     MAIL.charge(userMail, faultOrMiss, items, cost, category);
   };
 
+  this.countPoints = (userMail, retCategory) => {
+    if (this.isPayingUser(userMail) != true) {
+      return 0;
+    } else {
+      switch (retCategory) {
+        case "Faulty/Returning Tech":
+          return 0;
+        case "Unforeseeable Accident":
+          return 1;
+        case "Preventable Causes":
+          return 2;
+      }
+    }
+  };
+
+  this.totalPoints = (userMail, retCategory) => {
+    if (!this.isPayingUser(userMail)) {
+      return 0;
+    }
+    let currentPtCell = this.getAccount(userMail).getCell(
+      1,
+      findHeader("YTD Points", SingleAccounts)
+    );
+    let currentPoints = currentPtCell.getValue();
+    let newPoints = this.countPoints(userMail, retCategory);
+    let newTotalPts = currentPoints + newPoints;
+    currentPtCell.setValue(newTotalPts);
+    return newTotalPts;
+  };
+
   this.removeStuDevice = (deviceTag) => {
     // current account labelled singular for most commmon case, however works on any accountS found
     let currentAccount = SingleAccounts.createTextFinder(deviceTag)
@@ -491,19 +578,61 @@ const ACC = new (function () {
   };
 })();
 
-function hasUnsentOverdue(accountRange) {
-  let dueNotSent = richTextify(HouseRules.getRange("B9"))[1]
-  let accountRuns = richTextify(accountRange, true)
-  if (accountRuns.some(runObj => compareRichTexts (runObj, dueNotSent))) {
-    return true
-  } else return false
+/* function hasUnsentOverdue(accountRange) {
+  let dueNotSent = richTextify(HouseRules.getRange("B9"))[1];
+  let accountRuns = richTextify(accountRange, true);
+  if (accountRuns.some((runObj) => compareRichTexts(runObj, dueNotSent))) {
+    return true;
+  } else return false;
 }
 
 function hasSentOverdue(accountRange) {
-  let dueAndSent = richTextify(HouseRules.getRange("B10"))[1]
-  let accountRuns = richTextify(accountRange, true)
-  if (accountRuns.some(runObj => compareRichTexts (runObj, dueAndSent))) {
-    return true
-  } else return false
-}
+  let dueAndSent = richTextify(HouseRules.getRange("B10"))[1];
+  let accountRuns = richTextify(accountRange, true);
+  if (accountRuns.some((runObj) => compareRichTexts(runObj, dueAndSent))) {
+    return true;
+  } else return false;
+} */
 
+const _priceItem = (item, userMail, retCategory) => {
+  let pricedItem;
+  let totalPoints = ACC.totalPoints(userMail, retCategory)
+  let currPoints = ACC.countPoints(userMail, retCategory)
+  let itemBasis = Prices.createTextFinder(item)
+    .findNext()
+    .offset(0, 1)
+    .getValue();
+  let itemPrice = Prices.createTextFinder(item)
+    .findNext()
+    .offset(0, 2)
+    .getValue();
+  switch (itemBasis) {
+    case "points":
+      if (totalPoints <= 1 || currPoints == 0) {
+        // Logger.log("Not enough points to charge for " + item)
+        pricedItem = 0;
+      } else {
+        pricedItem = itemPrice;
+        // Logger.log("Enough points to charge for " + item)
+      }
+      break;
+    case "never":
+      // Logger.log("Cannot charge for " + item)
+      pricedItem = 0;
+      break;
+    case "always":
+      // Logger.log("Will always charge for " + item)
+      pricedItem = itemPrice;
+      break;
+  }
+  return Number(pricedItem);
+};
+
+function priceItems(items, userMail, retCategory) {
+  let totalPrice = items
+    .toString()
+    .split(",")
+    .map((item) => _priceItem(item, userMail, retCategory))
+    .reduce((a, b) => a + b);
+  return totalPrice;
+}

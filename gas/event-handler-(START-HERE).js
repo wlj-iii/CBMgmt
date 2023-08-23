@@ -132,8 +132,8 @@ function formSwitcher(e) {
     case "Outbound Form":
       checkOut(e);
       break;
-    case "Intake Form":
-      checkIn(e);
+    case "MIA Form":
+      manualMissing(e);
       break;
     case "Intake Form":
       checkIn(e);

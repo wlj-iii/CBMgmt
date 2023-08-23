@@ -4,46 +4,46 @@ const SickBay = SpreadsheetApp.getActive().getSheetByName('Sick Bay');
 const Boneyard = SpreadsheetApp.getActive().getSheetByName('Boneyard');
 const MissingInAction = SpreadsheetApp.getActive().getSheetByName('MIA');
 const inactiveOU = HouseRules.createTextFinder("Inactive OU").findNext().offset(0, 1).getValue();
-const inactiveOuId = SpreadsheetApp.getActive().getSheetByName("House Rules").createTextFinder("Inactive OU ID").findNext().offset(0, 1).getValue();
+const inactiveOuId = AdminDirectory.Orgunits.get("my_customer", inactiveOU.toString().slice(1)).orgUnitId
+const formulas = [["=ArrayFormula(if(isblank($A$2:$A), \"\", split($A$2:$A, \" - \", false)))"]];
 
 let legions = [ActiveDuty, Reserves, SickBay, Boneyard, MissingInAction];
 
 
 const LGN = new (function () {
-  const _findDevice = (cbAssetTag) => {
-    cbAssetTag = cbAssetTag.toString().slice(0, 11)
-    Logger.log(cbAssetTag)
-    let device = AdminDirectory.Chromeosdevices.list("my_customer", {
-      "query": `${cbAssetTag}`
-    }).chromeosdevices[0]
-    return device
-  }
-
   const _removeDeviceLegion = (assetTag) => {
     for (let i = 0; i < legions.length; i++) {
       let found = legions[i].createTextFinder(assetTag).findAll()
       for (let j = 0; j < found.length; j++) {
         let asset = found[j].getRow();
         legions[i].deleteRows(asset, 1);
+        if (asset = 2) {
+          legions[i].getRange(2, 2, 1, 1).setFormula(formulas);
+        }
+
       }
     }
   };
 
   const _setDeviceLegion = (cbAssetTag, LegionSheet) => {
-    let certaintyCheck = _findDevice(cbAssetTag).annotatedAssetId;
-
-    let formulas = [["=ArrayFormula(if(isblank($A$2:$A), \"\", split($A$2:$A, \" - \", false)))"]];
-    let dataRow = [certaintyCheck]
+    
+    let device = findDevice(cbAssetTag)
+    let dataRow = [device.annotatedAssetId]
 
     LegionSheet.appendRow(dataRow).getRange("B2:B").clear();
     LegionSheet.moveRows(LegionSheet.getRange(LegionSheet.getLastRow(), 1, 1, 1), 2)
     LegionSheet.getRange(2, 2, 1, 1).setFormula(formulas);
+    if (LegionSheet == MissingInAction) {
+      LegionSheet.getRange(2, 4, 1, 1).setValue(device.recentUsers[0].email);
+    }
   }
 
 
   this.reserves = (cbAssetTag, explanation) => {
-    let device = _findDevice(cbAssetTag)
-    let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the 
+    let device = findDevice(cbAssetTag)
+    let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the dash
+    let deviceId = device.deviceId;
+    Logger.log("inactive = " + inactiveOuId);
     let newDevice = {
       "annotatedAssetId": `${deviceName} RESERVES`,
       "annotatedUser": "",
@@ -63,9 +63,13 @@ const LGN = new (function () {
       }
     }
 
-    AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
+    try {
+      AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
+    } catch (e) {
+      Logger.log("Device probably already has pending wipe request, see below" + "\n" + e)
+    }
     if (device.status === "ACTIVE") {
-      AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
+      AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer", deviceId)
     };
     AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", device.deviceId)
 
@@ -75,16 +79,15 @@ const LGN = new (function () {
   };
 
   this.missing = (cbAssetTag) => {
-    let device = _findDevice(cbAssetTag)
+    let device = findDevice(cbAssetTag)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
-    let dateMissing = new Date().toDateString();
+    let dateMissing = new Date().toLocaleDateString();
     let lastAsgn = device.annotatedUser || "none found";
     let lastUser = device.recentUsers[0].email;
     let lastUsed = getLastTime(device)
     let newDevice = {
       "annotatedAssetId": `${deviceName} Marked AWOL ${dateMissing}`,
-      "annotatedUser": "",
       "orgUnitPath": `${inactiveOU}`,
       "orgUnitId": `${inactiveOuId}`,
       "notes": `Last assigned to ${lastAsgn}` + '\u000D' + `Last used by ${lastUser} on ${lastUsed}`
@@ -103,13 +106,14 @@ const LGN = new (function () {
   };
   
   this.sickBay = (cbAssetTag, faulties, explanation) => {
-    let device = _findDevice(cbAssetTag)
+    let device = findDevice(cbAssetTag)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
+    let faultyList = engMultiples(faulties);
     let deviceId = device.deviceId;
     let lastAsgn = device.annotatedUser || "none found";
     let lastUser = device.recentUsers[0].email;
     let newDevice = {
-      "annotatedAssetId": `${deviceName} Faulty ${faulties}`,
+      "annotatedAssetId": `${deviceName} Faulty ${faultyList}`,
       "annotatedUser": "",
       "orgUnitPath": `${inactiveOU}`,
       "orgUnitId": `${inactiveOuId}`,
@@ -129,27 +133,29 @@ const LGN = new (function () {
   }
   
   this.active = (cbAssetTag, asgnMail, dueDate) => {
-    let device = _findDevice(cbAssetTag)
+    let device = findDevice(cbAssetTag)
     let asgnUser = AdminDirectory.Users.get(asgnMail)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
-    let asgnOrgU = asgnUser.orgUnitPath.slice(1)
-    let asgnOuId = AdminDirectory.Orgunits.get("my_customer", asgnOrgU).orgUnitId
-    let asgnName = asgnUser.name.fullname
+    Logger.log("deviceId = " + deviceId);
+    let asgnOrgU = asgnUser.orgUnitPath.toString()
+    Logger.log("asgn = " + asgnOrgU);
+    Logger.log("inactive = " + inactiveOuId);
+    let asgnName = asgnUser.name.fullName
+    Logger.log("full name = " + asgnName);
     let newDevice = {
       "annotatedAssetId": `${deviceName} ${asgnName}`,
       "annotatedUser": `${asgnMail}`,
-      "orgUnitPath": `${asgnOrgU}`,
-      "orgUnitId": `${asgnOuId}`,
       "notes": `Due by ${dueDate}`
     }
     // The line below would wipe devices when missing if enabled. Currently not for "hey I lost my-" 10 minutes later "found it"
     // AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
     if (device.status !== "ACTIVE") {
-      AdminDirectory.Chromeosdevices.action({"action": "reenable"},"my_customer",deviceId)
+      AdminDirectory.Chromeosdevices.action({"action": "reenable"},"my_customer", deviceId)
     };
     
     AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId)
+    AdminDirectory.Chromeosdevices.moveDevicesToOu({"deviceIds": [deviceId]}, "my_customer", asgnOrgU)
     
     _removeDeviceLegion(deviceName);
     
@@ -157,7 +163,7 @@ const LGN = new (function () {
   }
   
   this.guillotine = (cbAssetTag, judge, judgement) => {
-    let device = _findDevice(cbAssetTag)
+    let device = findDevice(cbAssetTag)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the 
     let dateRetired = new Date().toDateString();
     let judgeName = AdminDirectory.Users.get(judge).name.fullname;
@@ -181,3 +187,13 @@ const LGN = new (function () {
   };
     
 })();
+
+function findDevice(cbAssetTag) {
+  cbAssetTag = cbAssetTag.toString().slice(0, 11)
+  let device = AdminDirectory.Chromeosdevices.list("my_customer", {
+    "query": `${cbAssetTag}`
+  }).chromeosdevices[0]
+  Logger.log(device.annotatedAssetId)
+  return device
+}
+
