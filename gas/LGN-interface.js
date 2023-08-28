@@ -44,7 +44,7 @@ const LGN = new (function () {
     let device = findDevice(cbAssetTag)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the dash
     let deviceId = device.deviceId;
-    Logger.log("inactive = " + inactiveOuId);
+    // Logger.log("inactive = " + inactiveOuId);
     let newDevice = {
       "annotatedAssetId": `${deviceName} RESERVES`,
       "annotatedUser": "",
@@ -138,12 +138,12 @@ const LGN = new (function () {
     let asgnUser = AdminDirectory.Users.get(asgnMail)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
-    Logger.log("deviceId = " + deviceId);
+    // Logger.log("deviceId = " + deviceId);
     let asgnOrgU = asgnUser.orgUnitPath.toString()
-    Logger.log("asgn = " + asgnOrgU);
-    Logger.log("inactive = " + inactiveOuId);
+    // Logger.log("asgn = " + asgnOrgU);
+    // Logger.log("inactive = " + inactiveOuId);
     let asgnName = asgnUser.name.fullName
-    Logger.log("full name = " + asgnName);
+    // Logger.log("full name = " + asgnName);
     let newDevice = {
       "annotatedAssetId": `${deviceName} ${asgnName}`,
       "annotatedUser": `${asgnMail}`,

@@ -120,7 +120,7 @@ const ACC = new (function () {
         1,
         BulkAccounts.getLastColumn()
       );
-      Logger.log(accountRange);
+      // Logger.log(accountRange);
     } else {
       try {
         accountRow = SingleAccounts.getRange(
@@ -195,15 +195,15 @@ const ACC = new (function () {
   };
 
   this.addCharger = (email, dueDate) => {
-    Logger.log(dueDate)
+    // Logger.log(dueDate)
     let account = this.getAccount(email);
     let accountRow = account.getRow()
-    Logger.log("accVals = " + account.getValues())
+    // Logger.log("accVals = " + account.getValues())
     let chgsOutCol = findHeader("Chargers Out", account.getSheet());
     
     let currChgsOut = account.getSheet().getRange(accountRow, chgsOutCol, 1, 1);
     let newNum = currChgsOut.getValue() + 1;
-    Logger.log("new Number = " + newNum)
+    // Logger.log("new Number = " + newNum)
     currChgsOut.setValue(newNum);
 
     if (!this.isBulkUser(email)) {
@@ -211,14 +211,14 @@ const ACC = new (function () {
 
 
       let datesList = SingleAccounts.getRange(accountRow, chgsDueCol, 1, 1);
-      Logger.log("dListCell = " + datesList.getA1Notation())
-      Logger.log("dList = " + datesList.getValue())
+      // Logger.log("dListCell = " + datesList.getA1Notation())
+      // Logger.log("dList = " + datesList.getValue())
       let currentDates = datesList.getValue().toString().trim().split(",")
-      Logger.log("pre:" + `\n` + currentDates)
+      // Logger.log("pre:" + `\n` + currentDates)
       currentDates.map((currentDate) => {new Date(currentDate)}).sort()
-      Logger.log("post:" + `\n` + currentDates)
+      // Logger.log("post:" + `\n` + currentDates)
       currentDates.push(new Date(dueDate));
-      Logger.log("pushed:" + `\n` + currentDates)
+      // Logger.log("pushed:" + `\n` + currentDates)
       datesList.setValue(currentDates.filter(function(el) { return el; }).map((currentDate) => dateToTwos(currentDate)).sort().join(", ").toString().trim())
         .setNumberFormat(["MM/DD/YY"]);
     } else {
@@ -645,9 +645,6 @@ function priceItems(items, userMail, retCategory) {
 }
 
 
-// below this point is old/needs refactoring
-
-
 function dailyCheckDue() {
   var today = new Date()
   var tomorrow = new Date(today)
@@ -677,24 +674,24 @@ function dailyCheckDue() {
     let chargerPos = account.toString().indexOf('charger')
     let numChgsOut = 0;
     if (chargerPos !== -1) {
-      Logger.log(account.toString())
-      Logger.log(account.toString().substring(chargerPos - 3, chargerPos - 1))
+      // Logger.log(account.toString())
+      // Logger.log(account.toString().substring(chargerPos - 3, chargerPos - 1))
       numChgsOut = Number(account.toString().substring(chargerPos - 3, chargerPos - 1).replaceAll(',', ""))
-      Logger.log("#chgs = " + numChgsOut)
-      Logger.log("account = " + account)
+      // Logger.log("#chgs = " + numChgsOut)
+      // Logger.log("account = " + account)
       account.shift()
-      Logger.log("account = " + account)
+      // Logger.log("account = " + account)
       for (let i = 0; i < numChgsOut; i++) {
         account.unshift('Charger')
-        Logger.log("account = " + account)
+        // Logger.log("account = " + account)
       }
     }
     items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
-    Logger.log(items)
+    // Logger.log(items)
     
 
     cost = priceItems(items, userMail, "Overdue")
-    Logger.log(cost)
+    // Logger.log(cost)
 
     ACC.charge(userMail, 'missing', items, cost, "Overdue")
   })
@@ -702,7 +699,7 @@ function dailyCheckDue() {
 }
 
 function daysAccsList(day) {
-  Logger.log(`listing for ${day}`)
+  // Logger.log(`listing for ${day}`)
   let dueOnDay = SingleAccounts.createTextFinder(day).matchEntireCell(false).findAll()
   // Logger.log(dueOnDay.length)
 
@@ -712,7 +709,7 @@ function daysAccsList(day) {
     let itemRow = itemDue.getRow()
     let itemAcc = SingleAccounts.getRange(itemRow, 1, 1, 1).getValue();
     accountsList.push(itemAcc)
-    Logger.log(accountsList)
+    // Logger.log(accountsList)
   }
 
   // TODO dueOnDay = BulkAccounts.createTectFinder etc etc
@@ -740,7 +737,7 @@ function dueTodaysList(today) {
 
       itemName = numChargersToday.toString() + ' charger(s)'
     }
-    Logger.log("itemName = " + itemName)    
+    // Logger.log("itemName = " + itemName)
     let accountsList = todaysMailingList.map(({ [0]: v }) => v)
     let currentAccountIndex = accountsList.indexOf(itemAcc)
     let currentAccount = todaysMailingList[currentAccountIndex]

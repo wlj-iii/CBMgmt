@@ -44,7 +44,7 @@ function editSwitcher(e) {
 function filterForStandalone(row) {
   const ss = SpreadsheetApp.getActive().getSheetByName("Pricing");
   const ssHeaders = ss.getRange(1, 1, 1, ss.getLastColumn()).getValues()[0];
-  Logger.log(row);
+  // Logger.log(row);
   let isLineItem = ssHeaders.indexOf("Standalone?");
   return row[isLineItem];
 }
@@ -52,7 +52,7 @@ function filterForStandalone(row) {
 function updateFormItems() {
   const ss = SpreadsheetApp.getActive().getSheetByName("Pricing");
   const ssHeaders = ss.getRange(1, 1, 1, ss.getLastColumn()).getValues()[0];
-  Logger.log(ssHeaders);
+  // Logger.log(ssHeaders);
   let itemsOnSheet = ss
     .getRange(2, 1, ss.getLastRow() - 1, ss.getLastColumn())
     .getValues();
@@ -60,7 +60,7 @@ function updateFormItems() {
     .filter((row) => filterForStandalone(row))
     .map((e) => (e = e[0]));
 
-  Logger.log(standaloneItems);
+  // Logger.log(standaloneItems);
   let intakeForm = FormApp.openById(
     "1KifzDMi_XmAhaS8St8O38eaOZvOPrQFoo43Wq05k14Y"
   );
@@ -143,9 +143,9 @@ function formSwitcher(e) {
 
 function showSidebarForm(formId) {
   let embedForm = HtmlService.createTemplateFromFile("FormTemplate.html");
-  Logger.log(formId);
+  // Logger.log(formId);
   embedForm.formId = formId;
-  Logger.log(embedForm.evaluate().getContent());
+  // Logger.log(embedForm.evaluate().getContent());
   Logger.log(
     SpreadsheetApp.getUi().showSidebar(
       embedForm.evaluate().setTitle("Enter Asset Information")

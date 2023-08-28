@@ -29,7 +29,7 @@ function checkIn(e) {
   if (cbAssetTag != "") {
     // Logger.log("starting legion process " + cbAssetTag)
     try {
-      Logger.log(cbAssetTag);
+      // Logger.log(cbAssetTag);
       if (cbParts.some((v) => faulties.includes(v))) {
         // Logger.log("faulty " + faulties)
         LGN.sickBay(cbAssetTag, faulties, explanation);

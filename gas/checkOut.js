@@ -1,4 +1,5 @@
 const CheckOut = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Outbound Form");
+const MassCheckOut = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("The Draft");
 
 function checkOut(e) {
   let namedValues = e.namedValues;
@@ -37,7 +38,7 @@ function checkOut(e) {
       finalDue = checkHoliday(customDue);
       break;
   }
-  Logger.log(`Final Due Date is ${finalDue}`);
+  // Logger.log(`Final Due Date is ${finalDue}`);
 
   // TODO add devices to bulk account
   if (!ACC.isBulkUser(asgnMail)) {
@@ -46,7 +47,7 @@ function checkOut(e) {
 
     if (devicesOut.includes('Chromebook entirely') && cbAssetTag !== "") {
       ACC.removeStuDevice(cbAssetTag)
-      let dev1Col = findHeader("First Device Out", SingleAccounts);
+      let dev1Col = findHeader("First Chromebook Out", SingleAccounts);
       let accLastDev = account.getCell(1, dev1Col)
         .getNextDataCell(SpreadsheetApp.Direction.NEXT)
         .getColumn();
@@ -58,11 +59,11 @@ function checkOut(e) {
       );
       let splitDevs = [];
 
-      Logger.log(devsRange.getValues())
+      // Logger.log(devsRange.getValues())
 
       for (let i = 0; i < devsRange.getValues()[0].filter(function(e) {return e} ).length/2; i++) {
         splitDevs.push([devsRange.getValues()[0][2*i], devsRange.getValues()[0][2*i + 1]])
-        Logger.log(splitDevs)
+        // Logger.log(splitDevs)
       }
       splitDevs.push([cbAssetTag, finalDue])
       splitDevs.sort(function (a, b) {
@@ -87,18 +88,18 @@ function checkOut(e) {
     }
 
     if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
-      Logger.log("hotspot = " + hsAssetTag)
+      // Logger.log("hotspot = " + hsAssetTag)
       try {
         let hsCol = findHeader("Hotspot Out", SingleAccounts);
         let hsRange = SingleAccounts.getRange(accountRow, hsCol, 1, 2);
-        Logger.log(hsRange.getValues())
+        // Logger.log(hsRange.getValues())
         let hsVals = [hsAssetTag, finalDue]
-        Logger.log(hsVals)
+        // Logger.log(hsVals)
         if (hsRange.isBlank()) {
-            Logger.log("hsRange was blank")
+            // Logger.log("hsRange was blank")
             hsRange.setValues([hsVals])
         } else {
-            Logger.log("hsRange was NOT blank it was " + hsRange.getValues())
+            // Logger.log("hsRange was NOT blank it was " + hsRange.getValues())
             throw new Error ('User already has a hotspot!')
         }
       } catch (e) {
@@ -118,4 +119,39 @@ function checkOut(e) {
   MAIL.outbound(asgnMail, devicesOut, finalDue)
 
   latestFirst(CheckOut)
+}
+
+function massCheckOut() {
+  let checkOutForm = FormApp.openByUrl(CheckOut.getFormUrl())
+  let drafted = MassCheckOut.getDataRange()
+  let draftedVals = drafted.getValues()
+
+  let items = checkOutForm.getItems();
+
+  let titles = [];
+  items.forEach((item) => titles.push(item.getTitle()));
+  let mailItem = items[titles.indexOf("Lakers Email")].asTextItem()
+  let cbItem = items[titles.indexOf("Lakers ****")].asTextItem()
+  let itemsOut = items[titles.indexOf("Outbound Items")].asCheckboxItem()
+  let dueDateItem = items[titles.indexOf("Due By")].asMultipleChoiceItem()
+
+  
+
+  for (let i = draftedVals.length; i > 1; i--) {
+    let txn = checkOutForm.createResponse()
+
+    let userMail = draftedVals[i - 1][findHeader("User Email", MassCheckOut) - 1]
+    let newDevice = draftedVals[i - 1][findHeader("Assigned Chromebook", MassCheckOut) - 1]
+    let itemsOutList = ["Chromebook entirely", "Charger"];
+    let dueDate = "End of Year"
+
+    let mailResponse = mailItem.createResponse(userMail)
+    let devResponse = cbItem.createResponse(newDevice)
+    let itemsOutResponse = itemsOut.createResponse(itemsOutList)
+    let dueResponse = dueDateItem.createResponse(dueDate)
+
+    txn.withItemResponse(mailResponse).withItemResponse(devResponse).withItemResponse(itemsOutResponse).withItemResponse(dueResponse).submit()
+
+    MassCheckOut.deleteRow(i)
+  }
 }

@@ -37,40 +37,8 @@
   "sheets": {
     "macros": [
       {
-        "menuName": "usersToSheet",
-        "functionName": "usersToSheet"
-      },
-      {
-        "menuName": "usersFromSheet",
-        "functionName": "usersFromSheet"
-      },
-      {
-        "menuName": "devicesToSheet",
-        "functionName": "devicesToSheet"
-      },
-      {
-        "menuName": "dataVal",
-        "functionName": "dataVal"
-      },
-      {
-        "menuName": "dataVal2",
-        "functionName": "dataVal2"
-      },
-      {
-        "menuName": "devicesFromSheet",
-        "functionName": "devicesFromSheet"
-      },
-      {
-        "menuName": "time",
-        "functionName": "time"
-      },
-      {
-        "menuName": "dinero",
-        "functionName": "dinero"
-      },
-      {
-        "menuName": "firstGuardian",
-        "functionName": "firstGuardian"
+        "menuName": "Mass Check Out",
+        "functionName": "massCheckOut"
       }
     ]
   }

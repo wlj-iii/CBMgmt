@@ -6,13 +6,13 @@ function techTicket(e) {
   let verdict = namedValues["Verdict"][0];
   let techNotes = namedValues["Technician Notes"][0];
   let technician = namedValues["Email Address"][0];
-  Logger.log(JSON.stringify(e))
+  // Logger.log(JSON.stringify(e))
 
   if (findDevice(cbAssetTag).annotatedAssetId.toString().includes('Faulty')) {
     if (verdict == "Cleared for Active Duty") {
       LGN.reserves(cbAssetTag, techNotes)
     } else {
-      Logger.log(e)
+      LGN.guillotine(cbAssetTag, AdminDirectory.Users.get(technician).name.fullName, techNotes)
     }
 
       latestFirst(Fix)  
