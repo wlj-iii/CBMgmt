@@ -37,8 +37,8 @@
   "sheets": {
     "macros": [
       {
-        "menuName": "Mass Check Out",
-        "functionName": "massCheckOut"
+        "menuName": "Form Fixer",
+        "functionName": "formsSorter"
       }
     ]
   }
