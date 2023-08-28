@@ -133,6 +133,7 @@ const ACC = new (function () {
           .findNext()
           .getRow();
       } catch (e) {
+        Logger.log("Creating account for " + AdminDirectory.Users.get(email).name.fullName)
         this.createSingleAcc(email);
         accountRow = SingleAccounts.getLastRow();
       }
@@ -266,7 +267,7 @@ const ACC = new (function () {
     let userRow = this.getAccount(userMail).getValues()[0];
     let reportArray = [];
     if (this.isBulkUser(userMail)) {
-      // do bulk user report
+      // TODO chargers and hotspots
       let chromiesOut = userRow[findHeader("Chromebooks", BulkAccounts) - 1];
       if (!chromiesOut) {
         reportArray.push("No Chromebooks");
@@ -300,7 +301,7 @@ const ACC = new (function () {
 
       for (let i = 0; i < 3; i++) {
         let deviceCol =
-          2 * i + Number(findHeader("First Device Out", SingleAccounts));
+          2 * i + Number(findHeader("First Chromebook Out", SingleAccounts));
         let deviceName = userRow[deviceCol - 1];
 
         let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toDateString();
@@ -313,7 +314,7 @@ const ACC = new (function () {
       }
 
       if (accountDevices.length === 0) {
-        devsReport = "No devices";
+        devsReport = "No Chromebooks";
       } else if (accountDevices.length === 1) {
         devsReport = accountDevices;
       } else {
@@ -351,7 +352,7 @@ const ACC = new (function () {
         chgsReport = `and no chargers currently checked out.`;
       }
 
-      if (devsReport == "No devices" && hotspotReport == "no hotspot") {
+      if (devsReport == "No Chromebooks" && hotspotReport == "no hotspot") {
         report = "\t" + devsReport + ", " + hotspotReport + ", " + chgsReport;
       } else {
         report =
@@ -400,7 +401,7 @@ const ACC = new (function () {
 
       for (let i = 0; i < 3; i++) {
         let deviceCol =
-          2 * i + Number(findHeader("First Device Out", SingleAccounts));
+          2 * i + Number(findHeader("First Chromebook Out", SingleAccounts));
         let deviceName = userRow[deviceCol - 1];
 
         let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString(
@@ -474,51 +475,55 @@ const ACC = new (function () {
     let secretaryCharge = [];
     let problem = engProb(faultOrMiss, items);
 
-    let locChargeFormula = `=if(indirect(address(row(), match(\"Resolved\", \$1:\$1, 0), 1)), 0, ${cost})`;
-    let secretaryYear =
-      (Number(getSY()) - 1).toString() + "-" + Number(getSY()).toString();
-    let secretaryDescription = `Tech - ${problem} ${secretaryYear} SY`;
 
-    Charges.activate();
-    let userFull = this.fullName(userMail);
-    // Logger.log(userFull);
-    localCharge[findHeader("Student Full") - 1] = userFull;
-    // Logger.log(localCharge[findHeader("Student Full") - 1]);
-    localCharge[findHeader("Reason") - 1] = problem;
-    localCharge[findHeader("Remaining Charge") - 1] = "";
-    localCharge[findHeader("Resolved") - 1] = "FALSE";
-    localCharge[findHeader("Date") - 1] = new Date();
-    Charges.appendRow(localCharge)
-      .sort(findHeader("Date"), false)
-      .getRange(2, findHeader("Remaining Charge"))
-      .setFormula(locChargeFormula);
-    Charges.getRange(2, 1, 1, Charges.getLastColumn()).setNumberFormats(
-      Charges.getRange(3, 1, 1, Charges.getLastColumn()).getNumberFormats()
-    );
+    if (cost !== 0) {
+      let locChargeFormula = `=if(indirect(address(row(), match(\"Resolved\", \$1:\$1, 0), 1)), 0, ${cost})`;
+      let secretaryYear =
+        (Number(getSY()) - 1).toString() + "-" + Number(getSY()).toString();
+      let secretaryDescription = `Tech - ${problem} ${secretaryYear} SY`;
 
-    Secretaries.activate();
-    secretaryCharge[findHeader("Date Assessed", Secretaries) - 1] = new Date();
-    secretaryCharge[findHeader("Last", Secretaries) - 1] =
-      AdminDirectory.Users.get(userMail).name.familyName;
-    secretaryCharge[findHeader("First", Secretaries) - 1] =
-      AdminDirectory.Users.get(userMail).name.givenName;
-    secretaryCharge[findHeader("Total", Secretaries) - 1] = cost;
-    secretaryCharge[findHeader("✔Paid", Secretaries) - 1] = "FALSE";
-    secretaryCharge[findHeader("CK#/CASH", Secretaries) - 1] = "";
-    secretaryCharge[findHeader("Description", Secretaries) - 1] =
-      secretaryDescription;
-    Secretaries.appendRow(secretaryCharge).sort(
-      findHeader("Date Assessed", Secretaries),
-      false
-    );
-    Secretaries.getRange(2, 1, 1, Secretaries.getLastColumn()).setNumberFormats(
-      Secretaries.getRange(
-        3,
-        1,
-        1,
-        Secretaries.getLastColumn()
-      ).getNumberFormats()
-    );
+      Charges.activate();
+      let userFull = this.fullName(userMail);
+      // Logger.log(userFull);
+      localCharge[findHeader("Student Full") - 1] = userFull;
+      // Logger.log(localCharge[findHeader("Student Full") - 1]);
+      localCharge[findHeader("Reason") - 1] = problem;
+      localCharge[findHeader("Remaining Charge") - 1] = "";
+      localCharge[findHeader("Resolved") - 1] = "FALSE";
+      localCharge[findHeader("Date") - 1] = new Date();
+      Charges.appendRow(localCharge)
+        .sort(findHeader("Date"), false)
+        .getRange(2, findHeader("Remaining Charge"))
+        .setFormula(locChargeFormula);
+      Charges.getRange(2, 1, 1, Charges.getLastColumn()).setNumberFormats(
+        Charges.getRange(3, 1, 1, Charges.getLastColumn()).getNumberFormats()
+      );
+
+      Secretaries.activate();
+      secretaryCharge[findHeader("Date Assessed", Secretaries) - 1] = new Date();
+      secretaryCharge[findHeader("Last", Secretaries) - 1] =
+        AdminDirectory.Users.get(userMail).name.familyName;
+      secretaryCharge[findHeader("First", Secretaries) - 1] =
+        AdminDirectory.Users.get(userMail).name.givenName;
+      secretaryCharge[findHeader("Total", Secretaries) - 1] = cost;
+      secretaryCharge[findHeader("✔Paid", Secretaries) - 1] = "FALSE";
+      secretaryCharge[findHeader("CK#/CASH", Secretaries) - 1] = "";
+      secretaryCharge[findHeader("Description", Secretaries) - 1] =
+        secretaryDescription;
+      Secretaries.appendRow(secretaryCharge).sort(
+        findHeader("Date Assessed", Secretaries),
+        false
+      );
+      Secretaries.getRange(2, 1, 1, Secretaries.getLastColumn()).setNumberFormats(
+        Secretaries.getRange(
+          3,
+          1,
+          1,
+          Secretaries.getLastColumn()
+        ).getNumberFormats()
+      );
+
+    }
 
     MAIL.charge(userMail, faultOrMiss, items, cost, category);
   };
@@ -531,6 +536,8 @@ const ACC = new (function () {
         case "Faulty/Returning Tech":
           return 0;
         case "Unforeseeable Accident":
+          return 1;
+        case "Overdue":
           return 1;
         case "Preventable Causes":
           return 2;
@@ -594,10 +601,8 @@ function hasSentOverdue(accountRange) {
   } else return false;
 } */
 
-const _priceItem = (item, userMail, retCategory) => {
+const _priceItem = (item, totalPoints, currPoints) => {
   let pricedItem;
-  let totalPoints = ACC.totalPoints(userMail, retCategory)
-  let currPoints = ACC.countPoints(userMail, retCategory)
   let itemBasis = Prices.createTextFinder(item)
     .findNext()
     .offset(0, 1)
@@ -629,10 +634,136 @@ const _priceItem = (item, userMail, retCategory) => {
 };
 
 function priceItems(items, userMail, retCategory) {
+  let totalPoints = ACC.totalPoints(userMail, retCategory)
+  let currPoints = ACC.countPoints(userMail, retCategory)
   let totalPrice = items
     .toString()
     .split(",")
-    .map((item) => _priceItem(item, userMail, retCategory))
+    .map((item) => _priceItem(item, totalPoints, currPoints))
     .reduce((a, b) => a + b);
   return totalPrice;
+}
+
+
+// below this point is old/needs refactoring
+
+
+function dailyCheckDue() {
+  var today = new Date()
+  var tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  var oneWeek = new Date(today)
+  oneWeek.setDate(oneWeek.getDate() + 7)
+  today = toDueString(today);
+  tomorrow = toDueString(tomorrow);
+  oneWeek = toDueString(oneWeek);
+
+  // Logger.log(today)
+  // Logger.log(tomorrow)
+  // Logger.log(oneWeek)
+
+  let pastDue = dueTodaysList(today); // Bc remember, we aren't sending emails in the morning if a device is due that day, so the list of devices due today will go out only after they are past due
+  let dueTomorrow = daysAccsList(tomorrow);
+  let dueOneWeek = daysAccsList(oneWeek);
+  dueTomorrow.forEach((account) => MAIL.dueSoon(account))
+  dueOneWeek.forEach((account) => MAIL.dueSoon(account))
+  
+  pastDue.forEach((account) => { // pastDue is a 2D array of accounts, structured as below
+    // accounts are returned with structure ['ascad@ls.org', '1 charger(s)', 'Lakers ATT001', 'Lakers 0327']
+    let hsRegEx = new RegExp(/(Lakers ATT\d{3})/, "gi")
+    let cbRegEx = new RegExp(/(Lakers \w{4})/, 'gi')
+    let cost;
+    let userMail = account.shift()
+    let chargerPos = account.toString().indexOf('charger')
+    let numChgsOut = 0;
+    if (chargerPos !== -1) {
+      Logger.log(account.toString())
+      Logger.log(account.toString().substring(chargerPos - 3, chargerPos - 1))
+      numChgsOut = Number(account.toString().substring(chargerPos - 3, chargerPos - 1).replaceAll(',', ""))
+      Logger.log("#chgs = " + numChgsOut)
+      Logger.log("account = " + account)
+      account.shift()
+      Logger.log("account = " + account)
+      for (let i = 0; i < numChgsOut; i++) {
+        account.unshift('Charger')
+        Logger.log("account = " + account)
+      }
+    }
+    items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
+    Logger.log(items)
+    
+
+    cost = priceItems(items, userMail, "Overdue")
+    Logger.log(cost)
+
+    ACC.charge(userMail, 'missing', items, cost, "Overdue")
+  })
+
+}
+
+function daysAccsList(day) {
+  Logger.log(`listing for ${day}`)
+  let dueOnDay = SingleAccounts.createTextFinder(day).matchEntireCell(false).findAll()
+  // Logger.log(dueOnDay.length)
+
+  var accountsList = [];
+  for (let i = 0; i < dueOnDay.length; i++) {
+    let itemDue = dueOnDay[i]
+    let itemRow = itemDue.getRow()
+    let itemAcc = SingleAccounts.getRange(itemRow, 1, 1, 1).getValue();
+    accountsList.push(itemAcc)
+    Logger.log(accountsList)
+  }
+
+  // TODO dueOnDay = BulkAccounts.createTectFinder etc etc
+
+  
+  accountsList = [...new Set(accountsList)]
+  return accountsList
+}
+
+function dueTodaysList(today) {
+  var todaysMailingList = [];
+  
+  let todaysStuList = SingleAccounts.createTextFinder(today).matchEntireCell(false).findAll()
+  todaysStuList.forEach((todayRng) => {
+    let itemRow = todayRng.getRow()
+    let itemAcc = SingleAccounts.getRange(itemRow, 1, 1, 1).getValue();
+    let mailTo = [itemAcc]
+    if (!todaysMailingList.toString().includes(mailTo)) {
+      todaysMailingList.push(mailTo)
+    }
+    let itemName = todayRng.offset(0, -1).getValue();
+    if (typeof itemName !== 'string') { // then must be number, usu. only used for number of chargers as they do not have names :(
+      let numChargersToday = countInstances(todayRng.getValue().toString(), today)
+      if (numChargersToday == 0) { numChargersToday = 1 } // this is a tricky thing, but bc the date was found with text finder there is at least one, but if there is only one when toString-ed it shows as a JS Date Object format, which throws the count instances thing off. Basically one is found but cannot be counted, so we add it back
+
+      itemName = numChargersToday.toString() + ' charger(s)'
+    }
+    Logger.log("itemName = " + itemName)    
+    let accountsList = todaysMailingList.map(({ [0]: v }) => v)
+    let currentAccountIndex = accountsList.indexOf(itemAcc)
+    let currentAccount = todaysMailingList[currentAccountIndex]
+    currentAccount.push(itemName)
+  })
+
+  return todaysMailingList
+}
+
+function toDueString(date) {
+  var nonZeroedMonth = (new Number(date.getMonth().toString()) + 1).toString() // I hate Javascript
+  var dueString = nonZeroedMonth.padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString().slice(2) // So so much
+  return dueString // Aug '23 Liam knows i can redo this with intl date format or whatever but honestly? don't feel like it, this works and is probably update-proof
+}
+
+function getDevicesFromBulk(rangeVal, dueString) {
+  let position = rangeVal.indexOf(dueString);
+  let deviceArray = [];
+
+  while (position !== -1) {
+    deviceArray.push(rangeVal.substring(position - 13, position - 2)) // -2 is before the space and open parentheses, so so longs as the device remains a 11-char string we're good
+    position = rangeVal.indexOf(dueString, position + 1);
+  }
+
+  return deviceArray
 }

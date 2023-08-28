@@ -135,8 +135,8 @@ function formSwitcher(e) {
     case "MIA Form":
       manualMissing(e);
       break;
-    case "Intake Form":
-      checkIn(e);
+    case "Fix-It Form":
+      techTicket(e);
       break;
   }
 }

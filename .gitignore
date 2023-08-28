@@ -1,6 +1,8 @@
 **/.gitconfig
 **/.clasprsc
 **/node_modules/
+**/gas-old/
 **/.clasp.json
 **/creds.json
 **/.vscode/
+**/test.*

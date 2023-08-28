@@ -29,6 +29,7 @@ const LGN = new (function () {
     
     let device = findDevice(cbAssetTag)
     let dataRow = [device.annotatedAssetId]
+    Logger.log("Moving " + dataRow[0] + " to " + LegionSheet.getName().toString())
 
     LegionSheet.appendRow(dataRow).getRange("B2:B").clear();
     LegionSheet.moveRows(LegionSheet.getRange(LegionSheet.getLastRow(), 1, 1, 1), 2)
@@ -71,7 +72,7 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer", deviceId)
     };
-    AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", device.deviceId)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
 
     _removeDeviceLegion(deviceName);
 
@@ -98,7 +99,7 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
     
     _removeDeviceLegion(deviceName);
 
@@ -125,7 +126,7 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
     
     _removeDeviceLegion(deviceName);
     
@@ -154,7 +155,7 @@ const LGN = new (function () {
       AdminDirectory.Chromeosdevices.action({"action": "reenable"},"my_customer", deviceId)
     };
     
-    AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
     AdminDirectory.Chromeosdevices.moveDevicesToOu({"deviceIds": [deviceId]}, "my_customer", asgnOrgU)
     
     _removeDeviceLegion(deviceName);
@@ -179,7 +180,7 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", device.deviceId)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
 
     _removeDeviceLegion(deviceName);
 
@@ -193,7 +194,7 @@ function findDevice(cbAssetTag) {
   let device = AdminDirectory.Chromeosdevices.list("my_customer", {
     "query": `${cbAssetTag}`
   }).chromeosdevices[0]
-  Logger.log(device.annotatedAssetId)
+  // Logger.log(device.annotatedAssetId)
   return device
 }
 

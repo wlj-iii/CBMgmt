@@ -13,7 +13,7 @@ function engMultiples(list) {
       let listedString = listArray.join(", ") + ", and " + last.trim();
       return listedString;
   }
-}
+};
 
 function spaMultiples(list) {
   let listArray = list.toString().split(",");
@@ -30,7 +30,7 @@ function spaMultiples(list) {
       let listedString = listArray.join(",") + " y " + last.trim();
       return listedString;
   }
-}
+};
 
 function translateItem(item) {
   let translatedItem = Prices.createTextFinder(item)
@@ -38,14 +38,14 @@ function translateItem(item) {
     .offset(0, 5)
     .getValue();
   return translatedItem.toString();
-}
+};
 
 function engProb(faultOrMiss, items) {
   let engProblem;
   let listedItems = engMultiples(items);
   engProblem = `${faultOrMiss} ${listedItems}`;
   return engProblem;
-}
+};
 
 function spanProb(faultOrMiss, items) {
   let spaProblem;
@@ -60,6 +60,25 @@ function spanProb(faultOrMiss, items) {
   }
 
   return spaProblem;
+};
+
+function engCat(category) {
+  let engCategory;
+  switch (category) {
+    case "Overdue":
+      engCategory = "an 'Overdue";
+      break;
+    case "Faulty/Returning Tech":
+      engCategory = "a 'Faulty/Returning Tech";
+      break;
+    case "Unforeseeable Accident":
+      engCategory = "an 'Unforeseeable Accident";
+      break;
+    case "Preventable Causes":
+      engCategory = "a 'Preventable Causes";
+      break;
+  }
+  return engCategory;
 }
 
 function spanCat(category) {
@@ -79,7 +98,7 @@ function spanCat(category) {
       break;
   }
   return spaCategory;
-}
+};
 
 function richTextify(range, multiCell) {
   let runs = [];
@@ -121,7 +140,7 @@ function richTextify(range, multiCell) {
     runObjs.push(runObj);
   }
   return runObjs;
-}
+};
 
 function compareRichTexts(runObj1, runObj2) {
   if (
@@ -135,7 +154,7 @@ function compareRichTexts(runObj1, runObj2) {
   ) {
     return true;
   } else return false;
-}
+};
 
 function compareRichDates(runObj1, runObj2) {
   if (runObj1.text < runObj2.text) {
@@ -144,7 +163,7 @@ function compareRichDates(runObj1, runObj2) {
     return 1;
   }
   return 0;
-}
+};
 
 function spanThatMultiples(items) {
   items = items.toString().split(",");
@@ -152,7 +171,7 @@ function spanThatMultiples(items) {
   let indefArticles = spaMultiples(spanItems);
   let defArticles = indefArticles.toString().replaceAll("un ", "el ").replaceAll("una ", "la ");
   return defArticles;
-}
+};
 
 function retIsAsgn(retMail, asgnMail) {
   let retVsAsgn;
@@ -170,7 +189,7 @@ function retIsAsgn(retMail, asgnMail) {
       "It looks like we do actually have that device assigned to you, and so it has been successfully been removed from your account!";
     return retVsAsgn;
   }
-}
+};
 
 function spanRetIsAsgn(retMail, asgnMail) {
   let spanRetVsAsgn;
@@ -188,7 +207,7 @@ function spanRetIsAsgn(retMail, asgnMail) {
       "Parece que en realidad tenemos ese Chromebook asignado a usted, por lo que se eliminó con éxito de su cuenta.";
     return spanRetVsAsgn;
   }
-}
+};
 
 function spanGreeting() {
   let hour = new Date().getHours()
@@ -199,4 +218,24 @@ function spanGreeting() {
   } else {
     return "Buen día"
   }
+};
+
+function spanDate(date) {
+  let dateObj = new Date(date)
+  let spanDate = new Intl.DateTimeFormat("es-419", {
+    weekday: "long",
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    dayPeriod: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+    timeZone: "America/New_York",
+  }).format(dateObj);
+  return spanDate
+};
+
+function countInstances(string, word) {
+  return string.split(word).length - 1;
 }

@@ -1,3 +1,5 @@
+const CheckOut = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Outbound Form");
+
 function checkOut(e) {
   let namedValues = e.namedValues;
   let asgnMail = namedValues["Lakers Email"][0];
@@ -112,4 +114,8 @@ function checkOut(e) {
   if (cbAssetTag !== "") {
     LGN.active(cbAssetTag, asgnMail, finalDue);
   }
+
+  MAIL.outbound(asgnMail, devicesOut, finalDue)
+
+  latestFirst(CheckOut)
 }
