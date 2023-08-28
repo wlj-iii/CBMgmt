@@ -5,6 +5,7 @@ function onOpen() {
     .addItem("Check Out Asset", "showCheckOutForm")
     .addItem("Mark Asset Missing", "showMiaForm")
     .addItem("Fix-It Ticket", "showFixItForm")
+    .addItem("MASS CHECK OUT", "massCheckOut")
     .addToUi();
 }
 
@@ -142,7 +143,7 @@ function formSwitcher(e) {
 }
 
 function showSidebarForm(formId) {
-  let embedForm = HtmlService.createTemplateFromFile("FormTemplate.html");
+  let embedForm = HtmlService.createTemplateFromFile("formTemplate.html");
   // Logger.log(formId);
   embedForm.formId = formId;
   // Logger.log(embedForm.evaluate().getContent());
@@ -167,4 +168,21 @@ function showMiaForm() {
 
 function showFixItForm() {
   showSidebarForm("1g-lGfWQc2kSnPiA2qqDtvAoRNCX9zsdymTAVkwSRkzk");
+}
+
+function formsSorter() {
+  let ui = SpreadsheetApp.getUi()
+  let popup = ui.alert('All 4 Forms will be shown and sorted with the latest at the top now. For visibility\'s sake please be sure to hide them again after!')
+
+  if (popup == ui.Button.OK) {
+    // Logger.log('The user clicked "OK"');
+    latestFirst(CheckIn)
+    latestFirst(CheckOut)
+    latestFirst(Fix)
+    latestFirst(MIA)
+  } /* else {
+    Logger.log('The user clicked "No" or the dialog\'s close button.');
+  } */
+
+
 }
