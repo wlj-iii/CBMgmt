@@ -28,6 +28,7 @@ function checkIn(e) {
 
   if (cbAssetTag != "") {
     // Logger.log("starting legion process " + cbAssetTag)
+  MAIL.inbound(retMail, items, cbAssetTag)
     try {
       // Logger.log(cbAssetTag);
       if (cbParts.some((v) => faulties.includes(v))) {
@@ -51,7 +52,6 @@ function checkIn(e) {
     }
   }
 
-  MAIL.inbound(retMail, items, cbAssetTag)
 
   if (faulties != "") {
     let cost = priceItems(faulties, retMail, retCategory)

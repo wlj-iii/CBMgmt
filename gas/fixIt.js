@@ -15,7 +15,7 @@ function techTicket(e) {
       LGN.guillotine(cbAssetTag, AdminDirectory.Users.get(technician).name.fullName, techNotes)
     }
 
-      latestFirst(Fix)  
+    latestFirst(Fix)  
   } else {
     Logger.log(`Sorry, ${ACC.fullName(technician)}, ${cbAssetTag} was not in the Sick Bay, and that means you may not perform work on it.`)
     MAIL.error(ACC.fullName(technician) + ' attempted medical malfeasance: \"' + cbAssetTag + '\" was not in the Sick Bay, please re-check that you scanned the correct tag AND that it was labelled as Sick Bay (Faulty in the Annotated Asset Id)')

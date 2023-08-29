@@ -40,7 +40,6 @@ function checkOut(e) {
   }
   // Logger.log(`Final Due Date is ${finalDue}`);
 
-  // TODO add devices to bulk account
   if (!ACC.isBulkUser(asgnMail)) {
     let account = ACC.getAccount(asgnMail);
     let accountRow = account.getRow();
@@ -110,6 +109,8 @@ function checkOut(e) {
     if (devicesOut.includes("Charger")) {
         ACC.addCharger(asgnMail, finalDue)
     }
+  } else {
+    // TODO add devices to bulk account
   }
 
   if (cbAssetTag !== "") {

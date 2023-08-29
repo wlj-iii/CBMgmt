@@ -74,9 +74,9 @@ const LGN = new (function () {
     };
     deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
 
-    _removeDeviceLegion(deviceName);
+    _removeDeviceLegion(deviceName.slice(0, 11));
 
-    _setDeviceLegion(cbAssetTag, Reserves);
+    _setDeviceLegion(deviceName, Reserves);
   };
 
   this.missing = (cbAssetTag) => {
@@ -99,11 +99,11 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
     
-    _removeDeviceLegion(deviceName);
+    _removeDeviceLegion(deviceName.slice(0, 11));
 
-    _setDeviceLegion(cbAssetTag, MissingInAction);
+    _setDeviceLegion(deviceName, MissingInAction);
   };
   
   this.sickBay = (cbAssetTag, faulties, explanation) => {
@@ -126,11 +126,11 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
     
-    _removeDeviceLegion(deviceName);
+    _removeDeviceLegion(deviceName.slice(0, 11));
     
-    _setDeviceLegion(cbAssetTag, SickBay);
+    _setDeviceLegion(deviceName, SickBay);
   }
   
   this.active = (cbAssetTag, asgnMail, dueDate) => {
@@ -155,12 +155,12 @@ const LGN = new (function () {
       AdminDirectory.Chromeosdevices.action({"action": "reenable"},"my_customer", deviceId)
     };
     
-    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
     AdminDirectory.Chromeosdevices.moveDevicesToOu({"deviceIds": [deviceId]}, "my_customer", asgnOrgU)
     
-    _removeDeviceLegion(deviceName);
+    _removeDeviceLegion(deviceName.slice(0, 11));
     
-    _setDeviceLegion(cbAssetTag, ActiveDuty);
+    _setDeviceLegion(deviceName, ActiveDuty);
   }
   
   this.guillotine = (cbAssetTag, judge, judgement) => {
@@ -180,11 +180,11 @@ const LGN = new (function () {
     if (device.status === "ACTIVE") {
       AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
     };
-    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId.slice(0, 11)
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
 
-    _removeDeviceLegion(deviceName);
+    _removeDeviceLegion(deviceName.slice(0, 11));
 
-    _setDeviceLegion(cbAssetTag, Boneyard);
+    _setDeviceLegion(deviceName, Boneyard);
   };
     
 })();

@@ -75,6 +75,13 @@ const MAIL = new (function () {
     let spanReport = ACC.spanReport(retMail)
     let device = findDevice(cbAssetTag)
     let asgnMail = device.annotatedUser
+    Logger.log(asgnMail)
+
+    try {
+      parentEmail = Parents.createTextFinder(retMail).findNext().offset(0, 4).getValue()
+      } catch (e) {
+        Logger.log("Parent for " + ACC.fullName(retMail) + " has not yet been synced")
+      }
 
     if (items.includes("Chromebook")) {
       retVsAsgn = retIsAsgn(retMail, asgnMail)
@@ -113,15 +120,17 @@ const MAIL = new (function () {
       GmailApp.sendEmail(retMail, msgSubj, msgBody,{
         'from': aliases[maskIndex],
         'name': maskName,
-        'replyTo': redirect
+        'replyTo': redirect,
+        'cc': parentEmail // place cursor on this line and press ctrl+/ to toggle the parent cc on or off
       })
     }
   }
 
   this.outbound = (asgnMail, items, dueDate) => {
     let msgSubj = 'Lakers Tech Checked Out'
+    let parentEmail = ""
     try {
-      let parentEmail = Parents.createTextFinder(asgnMail).findNext().offset(0, 4).getValue()
+      parentEmail = Parents.createTextFinder(asgnMail).findNext().offset(0, 4).getValue()
       } catch (e) {
         Logger.log("Parent for " + ACC.fullName(asgnMail) + " has not yet been synced")
       }
@@ -157,7 +166,7 @@ const MAIL = new (function () {
         'from': aliases[maskIndex],
         'name': maskName,
         'replyTo': redirect,
-        // 'cc': parentEmail
+        'cc': parentEmail // place cursor on this line and press ctrl+/ to toggle the parent cc on or off
       })
     }
   }
