@@ -20,7 +20,11 @@ const MAIL = new (function () {
     var spaRep = ACC.spanReport(userMail)
     let parentEmail
     if (charge != 0) {
+      try {
       parentEmail = Parents.createTextFinder(userMail).findNext().offset(0, 4).getValue()
+      } catch (e) {
+        Logger.log("Parent for " + ACC.fullName(userMail) + " has not yet been synced")
+      }
     } else {
       parentEmail = ""
     }
@@ -60,7 +64,11 @@ const MAIL = new (function () {
 
   this.inbound = (retMail, items, cbAssetTag) => {
     let msgSubj = 'Lakers Tech Checked In'
-    // let parentEmail = Parents.createTextFinder(retMail).findNext().offset(0, 4).getValue()
+    /* try {
+      let parentEmail = Parents.createTextFinder(retMail).findNext().offset(0, 4).getValue()
+      } catch (e) {
+        Logger.log("Parent for " + ACC.fullName(retMail) + " has not yet been synced")
+      } */
     let retVsAsgn;
     let spanRetVsAsgn;
     let report = ACC.report(retMail)
@@ -112,7 +120,12 @@ const MAIL = new (function () {
 
   this.outbound = (asgnMail, items, dueDate) => {
     let msgSubj = 'Lakers Tech Checked Out'
-    let parentEmail = Parents.createTextFinder(asgnMail).findNext().offset(0, 4).getValue()
+    try {
+      let parentEmail = Parents.createTextFinder(asgnMail).findNext().offset(0, 4).getValue()
+      } catch (e) {
+        Logger.log("Parent for " + ACC.fullName(asgnMail) + " has not yet been synced")
+      }
+
     let report = ACC.report(asgnMail)
     let spanReport = ACC.spanReport(asgnMail)
     dueDate = new Date(new Date(dueDate).setHours(16)).toLocaleString()
@@ -155,7 +168,11 @@ const MAIL = new (function () {
     var spanReport = ACC.spanReport(userMail);
 
     if (!ACC.isBulkUser(userMail)) {
+      try {
       parentEmail = Parents.createTextFinder(userMail).findNext().offset(0, 4).getValue()
+      } catch (e) {
+        Logger.log("Parent for " + ACC.fullName(userMail) + " has not yet been synced")
+      }
     } else {
       parentEmail = ""
     }
