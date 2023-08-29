@@ -1,5 +1,9 @@
 function parseAndLog() {
+  if (!csvParser().toString().includes('true')) {
+    MAIL.error(csvParser())
+  } else {
   Logger.log("Good CSV Parse? - " + csvParser());
+  }
 }
 
 function csvParser() {
@@ -9,10 +13,11 @@ function csvParser() {
       SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Skyward Input");
 
     // Gets CSV file by ID
-    let inFil = DriveApp.getFoldersByName("Incoming Files")
-      .next()
-      .getFilesByName("sftp")
-      .next()
+    let inFil = DriveApp.getFoldersByName("CBMgmt").next()
+      .getFoldersByName("v3").next()
+      .getFoldersByName("Prod").next()
+      .getFoldersByName("Incoming Files").next()
+      .getFilesByName("sftp").next()
       .getTargetId();
     let csvFile = DriveApp.getFolderById(inFil)
       .getFilesByName("Guardian1.csv")
