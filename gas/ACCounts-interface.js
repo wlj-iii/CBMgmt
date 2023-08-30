@@ -267,7 +267,7 @@ const ACC = new (function () {
     let userRow = this.getAccount(userMail).getValues()[0];
     let reportArray = [];
     if (this.isBulkUser(userMail)) {
-      // TODO chargers and hotspots
+      // ?TODO chargers and hotspots
       let chromiesOut = userRow[findHeader("Chromebooks", BulkAccounts) - 1];
       if (!chromiesOut) {
         reportArray.push("No Chromebooks");
@@ -282,7 +282,7 @@ const ACC = new (function () {
       }
       let hotspotsOut = userRow[findHeader("Hotspots", BulkAccounts) - 1];
       if (!hotspotsOut) {
-        reportArray.push("No hotspots");
+        Logger.log("No Hotspots for Bulk User")
       } else {
         reportArray.push(hotspotsOut.toString().split(", ").join("\r\n"));
       }
@@ -297,7 +297,8 @@ const ACC = new (function () {
       let userRow = this.getAccount(userMail).getValues()[0];
       var accountDevices = [];
       var report;
-      let devsReport;
+      let devsReport = [];
+      let cbksReport;
 
       for (let i = 0; i < 3; i++) {
         let deviceCol =
@@ -314,22 +315,24 @@ const ACC = new (function () {
       }
 
       if (accountDevices.length === 0) {
-        devsReport = "No Chromebooks";
+        cbksReport = "No Chromebooks";
       } else if (accountDevices.length === 1) {
-        devsReport = accountDevices;
+        cbksReport = accountDevices;
       } else {
-        devsReport = accountDevices.join("\r\n\t");
+        cbksReport = accountDevices.join("\r\n\t");
       }
-
+      devsReport.push(cbksReport)
+      
       let hotspotReport;
       let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts));
       let hotspotName = userRow[hotspotCol - 1];
       let hotspotDue = new Date(userRow[hotspotCol - 1 + 1]).toDateString();
-
+      
       if (!hotspotName) {
-        hotspotReport = "no hotspot";
+        hotspotReport = "";
       } else {
         hotspotReport = hotspotName + " (due " + hotspotDue + ")";
+        devsReport.push(hotspotReport)
       }
 
       let chgsDates = userRow[findHeader("Due (C)", SingleAccounts) - 1];
@@ -351,12 +354,13 @@ const ACC = new (function () {
       } else {
         chgsReport = `and no chargers currently checked out.`;
       }
+      devsReport.push(chgsReport)
 
-      if (devsReport == "No Chromebooks" && hotspotReport == "no hotspot") {
-        report = "\t" + devsReport + ", " + hotspotReport + ", " + chgsReport;
+      if (cbksReport == "No Chromebooks" && hotspotReport == "") {
+        report = "\t" + cbksReport + ", " + chgsReport;
       } else {
         report =
-          "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
+          "\t" + devsReport.join("\r\n\t");
       }
 
       return report;
@@ -382,7 +386,7 @@ const ACC = new (function () {
       }
       let hotspotsOut = userRow[findHeader("Hotspots", BulkAccounts) - 1];
       if (!hotspotsOut) {
-        reportArray.push("sin puntos de accesso");
+        Logger.log("No Hotspots for Bulk User")
       } else {
         reportArray.push(hotspotsOut.toString().split(", ").join("\r\n"));
       }
@@ -397,16 +401,15 @@ const ACC = new (function () {
       let userRow = this.getAccount(userMail).getValues()[0];
       var accountDevices = [];
       var report;
-      let devsReport;
+      let devsReport = [];
+      let cbksReport;
 
       for (let i = 0; i < 3; i++) {
         let deviceCol =
           2 * i + Number(findHeader("First Chromebook Out", SingleAccounts));
         let deviceName = userRow[deviceCol - 1];
 
-        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString(
-          "es-MX"
-        );
+        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString("es-MX");
         if (deviceDue == "Invalid Date") {
           deviceDue = "a fin de año";
         }
@@ -416,12 +419,13 @@ const ACC = new (function () {
       }
 
       if (accountDevices.length === 0) {
-        devsReport = "Sin Chromebooks";
+        cbksReport = "Sin Chromebooks";
       } else if (accountDevices.length === 1) {
-        devsReport = accountDevices;
+        cbksReport = accountDevices;
       } else {
-        devsReport = accountDevices.join("\r\n\t");
+        cbksReport = accountDevices.join("\r\n\t");
       }
+      devsReport.push(cbksReport)
 
       let hotspotReport;
       let hotspotCol = Number(findHeader("Hotspot Out", SingleAccounts));
@@ -431,9 +435,10 @@ const ACC = new (function () {
       );
 
       if (!hotspotName) {
-        hotspotReport = "sin puntos de accesso";
+        hotspotReport = "";
       } else {
         hotspotReport = hotspotName + " (vence al " + hotspotDue + ")";
+        devsReport.push(hotspotReport)
       }
 
       let chgsDates = userRow[findHeader("Due (C)", SingleAccounts) - 1];
@@ -455,15 +460,16 @@ const ACC = new (function () {
       } else {
         chgsReport = `y sin cargadores prestados`;
       }
+      devsReport.push(chgsReport)
 
       if (
-        devsReport == "Sin Chromebooks" &&
-        hotspotReport == "sin puntos de accesso"
+        cbksReport == "Sin Chromebooks" &&
+        hotspotReport == ""
       ) {
-        report = "\t" + devsReport + ", " + hotspotReport + ", " + chgsReport;
+        report = "\t" + cbksReport + " " + chgsReport;
       } else {
         report =
-          "\t" + devsReport + "\r\n\t" + hotspotReport + "\r\n\t" + chgsReport;
+          "\t" + devsReport.join("\r\n\t");
       }
 
       return report;

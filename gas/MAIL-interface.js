@@ -75,12 +75,13 @@ const MAIL = new (function () {
     let spanReport = ACC.spanReport(retMail)
     let device = findDevice(cbAssetTag)
     let asgnMail = device.annotatedUser
-    Logger.log(asgnMail)
+    // Logger.log(asgnMail)
 
     try {
       parentEmail = Parents.createTextFinder(retMail).findNext().offset(0, 4).getValue()
       } catch (e) {
         Logger.log("Parent for " + ACC.fullName(retMail) + " has not yet been synced")
+        parentEmail = ""
       }
 
     if (items.includes("Chromebook")) {

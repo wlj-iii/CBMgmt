@@ -8,7 +8,9 @@ function iShouldntBeHere() {
   
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
   // ACC.removeCharger('ascaddan2022@lakerschools.org')
-  dailyCheckDue()
+  Logger.log(ACC.report(testEmail))
+  Logger.log(ACC.spanReport(testEmail))
+  // dailyCheckDue()
 
   // LGN.active('Lakers 0327', testEmail, '10/20/23')
   // LGN.reserves('Lakers 0327', 'testing purposes')
