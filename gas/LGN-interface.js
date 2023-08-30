@@ -167,7 +167,13 @@ const LGN = new (function () {
     let device = findDevice(cbAssetTag)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the 
     let dateRetired = new Date().toDateString();
-    let judgeName = AdminDirectory.Users.get(judge).name.fullname;
+    Logger.log(judge)
+    let judgeObj = AdminDirectory.Users.get(judge)
+    Logger.log("mainObj = \'" + judgeObj + "\'")
+    let judgeNameObj = judgeObj?.name
+    Logger.log("nameObj = \'" + judgeNameObj + "\'")
+    let judgeName = judgeNameObj?.fullName
+    Logger.log("name = \'" + judgeName + "\'")
     let newDevice = {
       "annotatedAssetId": `${deviceName} KIA ON ${dateRetired}`,
       "annotatedUser": "",
@@ -175,12 +181,15 @@ const LGN = new (function () {
       "orgUnitId": `${inactiveOuId}`,
       "notes": `Retired by ${judgeName}` + '\u000D' + `Final Notes: ${judgement}`
     }
-
-    AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
+    try {
+          AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
+        } catch (e) {
+          Logger.log("Device probably already has pending wipe request, see below" + "\n" + e)
+        }
     if (device.status === "ACTIVE") {
-      AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
+      AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",device.deviceId)
     };
-    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
+    deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", device.deviceId).annotatedAssetId
 
     _removeDeviceLegion(deviceName.slice(0, 11));
 
