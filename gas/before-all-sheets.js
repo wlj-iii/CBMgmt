@@ -5,7 +5,7 @@ const BulkAccounts = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Bulk 
 const Charges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Charges");
 const Parents = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Skyward Input");
 const DatesSheet = SpreadsheetApp.getActive().getSheetByName('Speed Dating');
-const Secretaries = SpreadsheetApp.openById("1r1TpiQxqGvsMmyTEi8vW4eSRs9tsG8X2rMdVvMo2XPo").getActiveSheet();
+const Secretaries = SpreadsheetApp.openById("").getActiveSheet(); // Our Secretaries maintain their own lists, so this line grabs their external spreadsheet.
 
 
 function findHeader(q, sheet) {
