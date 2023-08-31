@@ -1,4 +1,5 @@
 function iShouldntBeHere() {
+  let cb = "Lakers 1101";
   let items = ['Chromebook', 'Charger']
   let testEmail = 'ascaddan2022@lakerschools.org'
   // let fullName = AdminDirectory.Users.get(testEmail).name.fullName
@@ -8,14 +9,14 @@ function iShouldntBeHere() {
   
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
   // ACC.removeCharger('ascaddan2022@lakerschools.org')
-  Logger.log(ACC.report(testEmail))
-  Logger.log(ACC.spanReport(testEmail))
+  // Logger.log(ACC.report(testEmail))
+  // Logger.log(ACC.spanReport(testEmail))
   // dailyCheckDue()
 
   // LGN.active('Lakers 0327', testEmail, '10/20/23')
   // LGN.reserves('Lakers 0327', 'testing purposes')
 
-  // MAIL.inbound(testEmail, items, "Lakers 0327")
+  MAIL.inbound(testEmail, items, cb)
   // MAIL.outbound(testEmail, 'Chromebook entirely, charger', '01/01/24')
   // MAIL.charge(testEmail, 'faulty', items, '20', 'Preventable Causes')
   // MAIL.dueSoon(testEmail)

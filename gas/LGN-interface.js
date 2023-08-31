@@ -28,6 +28,10 @@ const LGN = new (function () {
   const _setDeviceLegion = (cbAssetTag, LegionSheet) => {
     
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let dataRow = [device.annotatedAssetId]
     Logger.log("Moving " + dataRow[0] + " to " + LegionSheet.getName().toString())
 
@@ -42,6 +46,10 @@ const LGN = new (function () {
 
   this.reserves = (cbAssetTag, explanation) => {
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the dash
     let deviceId = device.deviceId;
     // Logger.log("inactive = " + inactiveOuId);
@@ -81,6 +89,10 @@ const LGN = new (function () {
 
   this.missing = (cbAssetTag) => {
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
     let dateMissing = new Date().toLocaleDateString();
@@ -108,6 +120,10 @@ const LGN = new (function () {
   
   this.sickBay = (cbAssetTag, faulties, explanation) => {
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let faultyList = engMultiples(faulties);
     let deviceId = device.deviceId;
@@ -135,6 +151,10 @@ const LGN = new (function () {
   
   this.active = (cbAssetTag, asgnMail, dueDate) => {
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let asgnUser = AdminDirectory.Users.get(asgnMail)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
@@ -165,6 +185,10 @@ const LGN = new (function () {
   
   this.guillotine = (cbAssetTag, judge, judgement) => {
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let deviceName = device.annotatedAssetId.slice(0, 13) // 11 does not include the 
     let dateRetired = new Date().toDateString();
     Logger.log(judge)
@@ -200,10 +224,15 @@ const LGN = new (function () {
 
 function findDevice(cbAssetTag) {
   cbAssetTag = cbAssetTag.toString().slice(0, 11)
-  let device = AdminDirectory.Chromeosdevices.list("my_customer", {
-    "query": `${cbAssetTag}`
-  }).chromeosdevices[0]
-  // Logger.log(device.annotatedAssetId)
-  return device
+    let device = AdminDirectory.Chromeosdevices.list("my_customer", {
+      "query": `${cbAssetTag}`
+    })
+
+    if (!device.chromeosdevices) {
+      return `${cbAssetTag} was not found`
+    } else {
+    // Logger.log(device.annotatedAssetId)
+      return device.chromeosdevices[0]  
+    }
 }
 

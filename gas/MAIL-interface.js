@@ -74,6 +74,10 @@ const MAIL = new (function () {
     let report = ACC.report(retMail)
     let spanReport = ACC.spanReport(retMail)
     let device = findDevice(cbAssetTag)
+    if (device.toString().includes(' was not found')) {
+      MAIL.error(`${cbAssetTag} was not found`);
+      return;
+    }
     let asgnMail = device.annotatedUser
     // Logger.log(asgnMail)
 
