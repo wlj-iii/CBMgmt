@@ -1,21 +1,24 @@
 const LogSheet = SpreadsheetApp.getActive().getSheetByName("LOGSHEET");
 
-const LOG = new (function () {
-  this.addTxn = (message, type) => {
-    let logTimeStamp = new Date()
-    Logger.log(logTimeStamp);
-    let logValues = [message, type, logTimeStamp];
-    LogSheet.appendRow(logValues);
+class Txn {
+  constructor(who, what, when, toWhat) {
+    this.whodunnit = who.toString();
+    this.txnType = what.toString();
+    this.items = engMultiples(toWhat);
+    this.timestamp = new Date(when);
+    this.invoiceSent = false;
+  }
+
+  commit() {
+    let txnRow = []
     let logTimeFormat = ["YYYY/MM/DD HH:mm:ss.sss"];
-    LogSheet.getRange(LogSheet.getLastRow(), 3).setNumberFormat(logTimeFormat);
-  };
-
-  this.checkIn = (retUsr, annotUsr, assetTag) => {
-    let message = `${retUsr} turned in ${annotUsr}\'s device: ${assetTag}`
-    LOG.addTxn(message, 'checkIn');
-  };
-})();
-
-function testLog() {
-  LOG.addTxn('hello?', 'test')
+    txnRow[findHeader("Actor", LogSheet) - 1] = this.whodunnit
+    txnRow[findHeader("Transaction Type", LogSheet) - 1] = this.txnType
+    txnRow[findHeader("Items", LogSheet) - 1] = this.items
+    txnRow[findHeader("Charged?", LogSheet) - 1] = this.invoiceSent
+    txnRow[findHeader("DateTime", LogSheet) - 1] = this.timestamp
+    LogSheet.appendRow(txnRow).moveRows(LogSheet.getRange(LogSheet.getLastRow(), 1, 1, 1), 2)
+    LogSheet.getRange(1, findHeader("DateTime", LogSheet), LogSheet.getLastRow(), 1).setNumberFormat(logTimeFormat);
+    LogSheet.getRange(2, findHeader("Charged?", LogSheet), LogSheet.getLastRow(), 1).insertCheckboxes()
+  }
 }

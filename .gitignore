@@ -6,3 +6,4 @@
 **/creds.json
 **/.vscode/
 **/test.*
+gas/before-all-sheets.js

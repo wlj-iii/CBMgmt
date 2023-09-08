@@ -3,7 +3,7 @@ const aliases = GmailApp.getAliases();
 const maskName = "Laker Device Management System";
 const maskAcc = "lakers-device-manager@lakerschools.org";
 const redirect = "help@lakerschools.org";
-const missingParameter = "This message is displayed due to a failure to load html. Lakers will not be able to directly aid in that, but be sure to let them know just in case!"
+const missingParameter = "This message requires html to be viewed"
 
 const MAIL = new (function () {
 
@@ -16,6 +16,10 @@ const MAIL = new (function () {
     var engCategory = engCat(category)
     var spaCategory = spanCat(category)
     var outstanding = ACC.outstandingFines(userMail)
+    if (outstanding == 0) {
+      Logger.log(`${fullName} was not actually charged`)
+      return
+    }
     var report = ACC.report(userMail)
     var spaRep = ACC.spanReport(userMail)
     let parentEmail
@@ -39,7 +43,7 @@ const MAIL = new (function () {
       chargeEmail.spa = {greeting: greeting, name: fullName, problem: spaProblem, charge: charge, category: spaCategory, outstanding: outstanding, report: spaRep};
       // Logger.log(chargeEmail.getCode())
 
-      GmailApp.sendEmail(userMail, msgSubj, missingParameter,{ // html overrides missing (regular body) parameter UNLESS a client cannot load html (?!?!?)
+      GmailApp.sendEmail(userMail, msgSubj, missingParameter,{ // html overrides missing (regular body) parameter EXCEPT if a user has a message unopened in their inbox, the content after the subj
         'from': aliases[maskIndex],
         'name': maskName,
         'replyTo': redirect,

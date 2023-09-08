@@ -6,10 +6,13 @@
   "scripts": {
     "clasp/dev": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay",
     "push/dev": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp push -w",
+    "pull/dev": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 14eRESUj39sNLvsWCxewMhJ4NxTx-8UM5VOTNs5y4duGNuvMogsXebFay && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp pull",
     "clasp/stage": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y",
     "push/stage": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp push -w",
+    "pull/stage": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 18u1eoNOj5W2Y1R94JFSiD6IP6cDc5j6sG9WR-Atd7bb1wA0j6Jd9Xw-y && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp pull",
     "clasp/prod": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_",
-    "push/prod": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp push -w"
+    "push/prod": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp push -w",
+    "pull/prod": "npx clasp-env --folder \"C:\\Users\\htpbm\\Workspace\\Other Works\\Public\\Lakers\\Tech Dept\\clasp\\CBMgmt\\CBMgmt - v3\" --scriptId 1rWWnBrRHTrHHZiF8bPy-Xq8NHlgchgpAiQOnZQH2GHzNGdQlryhvjAj_ && cd \"P:\\CBMgmt\\CBMgmt - v3\\gas\" && clasp pull"
   },
   "repository": {
     "type": "git",

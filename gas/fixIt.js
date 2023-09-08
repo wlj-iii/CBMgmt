@@ -6,6 +6,7 @@ function techTicket(e) {
   let verdict = namedValues["Verdict"][0];
   let techNotes = namedValues["Technician Notes"][0];
   let technician = namedValues["Email Address"][0];
+  let timestamp = namedValues["Timestamp"][0];
   let device = findDevice(cbAssetTag);
   if (device.toString().includes(' was not found')) {
     MAIL.error(`${cbAssetTag} was not found`);
@@ -17,8 +18,12 @@ function techTicket(e) {
   if (device?.annotatedAssetId.toString().includes("Faulty")) {
     if (verdict == "Cleared for Active Duty") {
       LGN.reserves(cbAssetTag, techNotes);
+      let transaction = new Txn(technician, "Device Fixed", timestamp, cbAssetTag)
+      transaction.commit()
     } else {
       LGN.guillotine(cbAssetTag, technician, techNotes);
+      let transaction = new Txn(technician, "Device Retired", timestamp, cbAssetTag)
+      transaction.commit()
     }
 
     latestFirst(Fix);
@@ -34,5 +39,7 @@ function techTicket(e) {
         cbAssetTag +
         '" was not in the Sick Bay, please re-check that you scanned the correct tag AND that it was labelled as Sick Bay (Faulty in the Annotated Asset Id)'
     );
+    let transaction = new Txn(technician, "Medical Malfeasance", timestamp, cbAssetTag)
+    transaction.commit()
   }
 }

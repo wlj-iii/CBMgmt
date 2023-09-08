@@ -582,7 +582,7 @@ const ACC = new (function () {
         1,
         SingleAccounts.getLastColumn() - foundDev + 1
       );
-      if (!nextDev) {
+      if (nextDev.isBlank()) {
         nowDev.setValues([["", ""]]);
       } else {
         nextDev.moveTo(nowDev);
@@ -692,6 +692,10 @@ function dailyCheckDue() {
         // Logger.log("account = " + account)
       }
     }
+    let cbList = account.toString().match(cbRegEx)
+    cbList.forEach((foundCB) => {
+      LGN.missing(foundCB.toString())
+    })
     items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
     // Logger.log(items)
     
@@ -700,6 +704,11 @@ function dailyCheckDue() {
     // Logger.log(cost)
 
     ACC.charge(userMail, 'missing', items, cost, "Overdue")
+    let transaction = new Txn(userMail, "Overdue Items", new Date(), account)
+    if (cost > 0) {
+      transaction.invoiceSent = true
+    }
+    transaction.commit()
   })
 
 }

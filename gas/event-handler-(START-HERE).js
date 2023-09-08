@@ -1,4 +1,4 @@
-function onOpen() {
+function onOpening() { // if this is titled onOpen, it fires twice, and the first time is because of the name → causes problems
   SpreadsheetApp.getUi()
     .createMenu("Tech Dept. Options")
     .addItem("Check In Asset", "showCheckInForm")
@@ -21,7 +21,7 @@ function editSwitcher(e) {
   switch (e.range.getSheet().getName()) {
     case "Pricing":
       if (e.user.getEmail() === "lakintaccmgr@lakerschools.org") {
-        Logger.log("Liam is testing so we won't count this edit yet");
+        Logger.log("Work is happening so we won't count this edit");
         break;
       } else {
         updateFormItems();
