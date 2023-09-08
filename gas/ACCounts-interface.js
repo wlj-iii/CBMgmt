@@ -176,14 +176,14 @@ const ACC = new (function () {
         .toString()
         .trim()
         .split(",")
-        .map((currentDate) => new Date(currentDate))
+        .map((currentDate) => new Date(currentDate).getTime())
         .sort()
         .reverse();
       currentDates.splice(currentDates.indexOf(Math.min(currentDates)), 1);
       datesList
         .setValue(
           currentDates
-            .map((currentDate) => dateToTwos(currentDate))
+            .map((currentDate) => dateToTwos(new Date(currentDate)))
             .join(",")
             .toString()
             .trim()
