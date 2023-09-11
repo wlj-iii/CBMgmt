@@ -175,7 +175,7 @@ function spanThatMultiples(items) {
 
 function retIsAsgn(retMail, asgnMail) {
   let retVsAsgn;
-  if (!asgnMail) {
+  if (!asgnMail.includes("@") || !asgnMail) {
     retVsAsgn =
       "We could not be certain that that device was checked out to you, so please see below to make sure that you do not have any Chromebooks still checked out to you.";
     return retVsAsgn;
@@ -193,7 +193,7 @@ function retIsAsgn(retMail, asgnMail) {
 
 function spanRetIsAsgn(retMail, asgnMail) {
   let spanRetVsAsgn;
-  if (!asgnMail) {
+  if (!asgnMail.includes("@") || !asgnMail) {
     spanRetVsAsgn =
       "No pudimos encontrar a quién se le desprotegió ese Chromebook, así que consulte a continuación para asegurarse de que no haya nada en su cuenta que no se esperaba.";
     return spanRetVsAsgn;
