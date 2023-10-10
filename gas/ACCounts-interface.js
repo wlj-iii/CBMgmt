@@ -176,21 +176,23 @@ const ACC = new (function () {
         .toString()
         .trim()
         .split(",")
-        .map((currentDate) => new Date(currentDate).getTime())
+        .map((currentDate) => new Date(currentDate))
         .sort()
         .reverse();
       currentDates.splice(currentDates.indexOf(Math.min(currentDates)), 1);
       datesList
         .setValue(
           currentDates
-            .map((currentDate) => dateToTwos(new Date(currentDate)))
+            .map((currentDate) => dateToTwos(currentDate))
             .join(",")
             .toString()
             .trim()
         )
         .setNumberFormat(["MM/DD/YY"]);
     } else {
-      // TODO: bulk user -1 charger
+      let chgsCol = findHeader("Chargers Out", BulkAccounts);
+      let chgsOutCell = BulkAccounts.getRange(account.getRow(), chgsCol, 1, 1);
+      chgsOutCell.setValue(Math.min(0, new Number(chgsOutCell.getValue())))
     }
   };
 
@@ -220,9 +222,11 @@ const ACC = new (function () {
       currentDates.push(new Date(dueDate));
       // Logger.log("pushed:" + `\n` + currentDates)
       datesList.setValue(currentDates.filter(function(el) { return el; }).map((currentDate) => dateToTwos(currentDate)).sort().join(", ").toString().trim())
-        .setNumberFormat(["MM/DD/YY"]);
+      .setNumberFormat(["MM/DD/YY"]);
     } else {
-      // TODO: bulk user +1 charger
+      let chgsCol = findHeader("Chargers Out", BulkAccounts);
+      let chgsOutCell = BulkAccounts.getRange(accountRow, chgsCol, 1, 1);
+      chgsOutCell.setValue(new Number(chgsOutCell.getValue()) + 1)
     }
   };
 
@@ -237,6 +241,22 @@ const ACC = new (function () {
 
       let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
       nowDev.setValues([["", ""]]);
+    }
+  };
+
+  this.removeBulkHotspot = (assetTag) => {
+    let hspDueRegEx = new RegExp(`${assetTag}`)
+    let currentAccount = BulkAccounts.createTextFinder(assetTag)
+      .findAll();
+
+    for (let i = 0; i < currentAccount.length; i++) {
+      let devCol = currentAccount[i].getColumn();
+      let foundUsr = currentAccount[i].getRow();
+
+      let hspRange = BulkAccounts.getRange(foundUsr, devCol, 1, 1);
+      let hspList = chromieRange.getValue().split(",").filter((hsp) => hsp.toString().search(hspDueRegEx) == -1).join(", ")
+
+      hspRange.setValue(hspList)
     }
   };
 
@@ -267,7 +287,6 @@ const ACC = new (function () {
     let userRow = this.getAccount(userMail).getValues()[0];
     let reportArray = [];
     if (this.isBulkUser(userMail)) {
-      // ?TODO chargers and hotspots
       let chromiesOut = userRow[findHeader("Chromebooks", BulkAccounts) - 1];
       if (!chromiesOut) {
         reportArray.push("No Chromebooks");
@@ -589,6 +608,23 @@ const ACC = new (function () {
       }
     }
   };
+  
+
+  this.removeBulkDevice = (deviceTag) => {
+    let devDueRegEx = new RegExp(`${deviceTag}.{13}`)
+    let currentAccount = BulkAccounts.createTextFinder(deviceTag)
+      .matchEntireCell(false)
+      .findAll()
+    for (let i = 0; i < currentAccount.length; i++) {
+      let devCol = currentAccount[i].getColumn();
+      let foundUsr = currentAccount[i].getRow();
+      
+      let chromieRange = BulkAccounts.getRange(foundUsr, devCol, 1, 1);
+      let chromiesList = chromieRange.getValue().split(",").filter((dev) => dev.toString().search(devDueRegEx) == -1).join(", ")
+
+      chromieRange.setValue(chromiesList)
+    }
+  };
 })();
 
 /* function hasUnsentOverdue(accountRange) {
@@ -674,7 +710,7 @@ function dailyCheckDue() {
   pastDue.forEach((account) => { // pastDue is a 2D array of accounts, structured as below
     // accounts are returned with structure ['ascad@ls.org', '1 charger(s)', 'Lakers ATT001', 'Lakers 0327']
     let hsRegEx = new RegExp(/(Lakers ATT\d{3})/, "gi")
-    let cbRegEx = new RegExp(/(Lakers \w{4})/, 'gi')
+    let cbRegEx = new RegExp(/(Lakers \w{4})/, "gi")
     let cost;
     let userMail = account.shift()
     let chargerPos = account.toString().indexOf('charger')
@@ -692,10 +728,11 @@ function dailyCheckDue() {
         // Logger.log("account = " + account)
       }
     }
-    let cbList = account.toString().match(cbRegEx)
-    cbList.forEach((foundCB) => {
-      LGN.missing(foundCB.toString())
-    })
+    let devs = account.filter((item) => item.toString().search(cbRegEx) > -1)
+    devs.forEach(
+      // (foundCB) => {LGN.missing(foundCB.toString())}
+      (foundCB) => {Logger.log(foundCB.toString())}
+    )
     items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
     // Logger.log(items)
     

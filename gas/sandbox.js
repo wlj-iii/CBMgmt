@@ -1,15 +1,26 @@
 function iShouldntBeHere() {
   let cb = "Lakers 1101";
   let items = ['Chromebook', 'Charger']
-  let testEmail = 'ascaddan2022@lakerschools.org'
+  let testEmail = 'lakintaccmgr@lakerschools.org'
+  let testBulkDevs = "Lakers 0426 (05/31/2024), Lakers 1101 (05/31/2024), Lakers 0429 (05/31/2024)"
+  // let tester = new RegExp(`${cb}.{13}`)
+  // let devsArr = testBulkDevs.split(",").filter((dev) => dev.toString().search(tester) == -1)
+  // Logger.log(devsArr)
   // let fullName = AdminDirectory.Users.get(testEmail).name.fullName
   // Logger.log(fullName)
   
   // latestFirst(MIA)
   
+
+  // let newBulkDevs = testBulkDevs.toString().split(",").forEach(
+    // dev = dev.trim().replace(")", "").split("(")
+    // )
+  // Logger.log(newBulkDevs)
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
   // ACC.removeCharger('ascaddan2022@lakerschools.org')
-  Logger.log(ACC.outstandingFines(testEmail))
+  // ACC.removeCharger("lakintaccmgr@lakerschools.org")
+  // ACC.removeBulkDevice(`${cb}`)
+  // Logger.log(ACC.outstandingFines(testEmail))/
   // Logger.log(ACC.spanReport(testEmail))
   // dailyCheckDue()
 
@@ -29,8 +40,8 @@ function iShouldntBeHere() {
 
 
 function jShouldntBeHere() {
-  let items = ['Chromebook', 'Charger']
-  const transaction = new Txn("ascaddan2022@lakerschools.org", "Check In", new Date(), items)
+  // let items = ['Chromebook', 'Charger']
+  // const transaction = new Txn("ascaddan2022@lakerschools.org", "Check In", new Date(), items)
   // transaction.invoiceSent = true
-  transaction.commit()
+  // transaction.commit()
 };

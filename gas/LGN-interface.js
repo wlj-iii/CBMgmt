@@ -155,7 +155,6 @@ const LGN = new (function () {
       MAIL.error(`${cbAssetTag} was not found`);
       return;
     }
-    let dueDate = dateToTwos(dueDate)
     let asgnUser = AdminDirectory.Users.get(asgnMail)
     let deviceName = device.annotatedAssetId.slice(0, 13) // 13 includes the dash
     let deviceId = device.deviceId;
@@ -168,7 +167,7 @@ const LGN = new (function () {
     let newDevice = {
       "annotatedAssetId": `${deviceName} ${asgnName}`,
       "annotatedUser": `${asgnMail}`,
-      "notes": `Due by ${dueDate} at 4PM`
+      "notes": `Due by ${dueDate}`
     }
     // The line below would wipe devices when missing if enabled. Currently not for "hey I lost my-" 10 minutes later "found it"
     // AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)

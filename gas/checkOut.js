@@ -42,7 +42,7 @@ function checkOut(e) {
             }
             // Logger.log(`Final Due Date is ${finalDue}`);
             
-            if (!ACC.isBulkUser(asgnMail)) {
+  if (!ACC.isBulkUser(asgnMail)) {
     let account = ACC.getAccount(asgnMail);
     let accountRow = account.getRow();
     
@@ -62,16 +62,16 @@ function checkOut(e) {
         let splitDevs = [];
         
         // Logger.log(devsRange.getValues())
-        
+      
         for (let i = 0; i < devsRange.getValues()[0].filter(function(e) {return e} ).length/2; i++) {
           splitDevs.push([devsRange.getValues()[0][2*i], devsRange.getValues()[0][2*i + 1]])
           // Logger.log(splitDevs)
-        }
+      }
       splitDevs.push([cbAssetTag, finalDue])
       splitDevs.sort(function (a, b) {
         return a[1] - b[1];
       });
-      
+    
       if (splitDevs.length > 3) {
         try {
           throw new Error("User has too many devices out!");
@@ -85,11 +85,11 @@ function checkOut(e) {
           dev1Col,
           1,
           newDevs.length
-          ).setValues([newDevs]);
-        }
+        ).setValues([newDevs]);
       }
+    }
       
-      if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
+    if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
         // Logger.log("hotspot = " + hsAssetTag)
       try {
         let hsCol = findHeader("Hotspot Out", SingleAccounts);
@@ -117,14 +117,31 @@ function checkOut(e) {
       ACC.addCharger(asgnMail, finalDue)
     }
   } else {
-    // TODO add devices to bulk account
+    // TODO bulk device checkout
+    if (devicesOut.includes('Chromebook entirely') && cbAssetTag !== "") {
+      itemsArr.push(cbAssetTag)
+      ACC.removeBulkDevice(cbAssetTag)
+      
+    }
+
+    if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {}
+
+    if (devicesOut.includes('Charger')) {}
   }
   
+  let realDevice = new RegExp(/Lakers \w\d{3}/)
   if (cbAssetTag !== "") {
-    LGN.active(cbAssetTag, asgnMail, finalDue);
+    if (cbAssetTag.match(realDevice)) {
+      LGN.active(cbAssetTag, asgnMail, finalDue);
+    }
+
+  }
+  if (cbAssetTag !== "" && !cbAssetTag.match(realDevice)) {
+    Logger.log('dummy chromie')
+  } else {
+    MAIL.outbound(asgnMail, devicesOut, finalDue)
   }
   
-  MAIL.outbound(asgnMail, devicesOut, finalDue)
   
   let transaction = new Txn(asgnMail, "Check Out", timestamp, itemsArr)
   transaction.commit()
