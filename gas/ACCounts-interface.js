@@ -84,7 +84,7 @@ const ACC = new (function () {
       1,
       1,
       SingleAccounts.getLastColumn()
-    )[0];
+    );
   };
 
   this.createBulkAcc = (email) => {
@@ -98,7 +98,7 @@ const ACC = new (function () {
       1,
       1,
       SingleAccounts.getLastColumn()
-    )[0];
+    );
   };
 
   this.getAccount = (email) => {
@@ -111,8 +111,7 @@ const ACC = new (function () {
           .findNext()
           .getRow();
       } catch (e) {
-        this.createBulkAcc(email);
-        accountRow = BulkAccounts.getLastRow();
+        accountRow = this.createBulkAcc(email).getRow();
       }
       accountRange = BulkAccounts.getRange(
         accountRow,
@@ -134,8 +133,7 @@ const ACC = new (function () {
           .getRow();
       } catch (e) {
         Logger.log("Creating account for " + AdminDirectory.Users.get(email).name.fullName)
-        this.createSingleAcc(email);
-        accountRow = SingleAccounts.getLastRow();
+        accountRow = this.createSingleAcc(email).getRow();
       }
       accountRange = SingleAccounts.getRange(
         accountRow,

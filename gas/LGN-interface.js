@@ -5,6 +5,8 @@ const Boneyard = SpreadsheetApp.getActive().getSheetByName('Boneyard');
 const MissingInAction = SpreadsheetApp.getActive().getSheetByName('MIA');
 const inactiveOU = HouseRules.createTextFinder("Inactive OU").findNext().offset(0, 1).getValue();
 const inactiveOuId = AdminDirectory.Orgunits.get("my_customer", inactiveOU.toString().slice(1)).orgUnitId
+const sickOU = HouseRules.createTextFinder("Sick OU").findNext().offset(0, 1).getValue();
+const sickOuId = AdminDirectory.Orgunits.get("my_customer", sickOU.toString().slice(1)).orgUnitId
 const formulas = [["=ArrayFormula(if(isblank($A$2:$A), \"\", split($A$2:$A, \" - \", false)))"]];
 
 let legions = [ActiveDuty, Reserves, SickBay, Boneyard, MissingInAction];
@@ -132,15 +134,15 @@ const LGN = new (function () {
     let newDevice = {
       "annotatedAssetId": `${deviceName} Faulty ${faultyList}`,
       "annotatedUser": "",
-      "orgUnitPath": `${inactiveOU}`,
-      "orgUnitId": `${inactiveOuId}`,
+      "orgUnitPath": `${sickOU}`,
+      "orgUnitId": `${sickOuId}`,
       "notes": `Last assigned to ${lastAsgn}` + '\u000D' + `Last used by ${lastUser}` + '\u000D' + `Presented with ${explanation}`
     }
     
     // The line below would wipe devices when broken if enabled. Currently not for the hopeful case of quick fixes :-)
     // AdminDirectory.Customer.Devices.Chromeos.issueCommand({ "commandType": "WIPE_USERS" }, "my_customer", device.deviceId)
-    if (device.status === "ACTIVE") {
-      AdminDirectory.Chromeosdevices.action({"action": "disable"},"my_customer",deviceId)
+    if (device.status !== "ACTIVE") {
+      AdminDirectory.Chromeosdevices.action({"action": "reenable"},"my_customer", deviceId)
     };
     deviceName = AdminDirectory.Chromeosdevices.patch(newDevice, "my_customer", deviceId).annotatedAssetId
     
