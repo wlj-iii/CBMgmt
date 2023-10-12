@@ -117,10 +117,18 @@ function checkOut(e) {
       ACC.addCharger(asgnMail, finalDue)
     }
   } else {
+    let account = ACC.getAccount(asgnMail);
+    let accountRow = account.getRow();
     // TODO bulk device checkout
     if (devicesOut.includes('Chromebook entirely') && cbAssetTag !== "") {
       itemsArr.push(cbAssetTag)
       ACC.removeBulkDevice(cbAssetTag)
+
+      let splitDevs = []
+      let cbCol = findHeader("Chromebooks", BulkAccounts)
+      let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)
+      
+
       
     }
 
