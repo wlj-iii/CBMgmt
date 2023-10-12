@@ -192,7 +192,7 @@ const ACC = new (function () {
     } else {
       let chgsCol = findHeader("Chargers Out", BulkAccounts);
       let chgsOutCell = BulkAccounts.getRange(account.getRow(), chgsCol, 1, 1);
-      chgsOutCell.setValue(Math.min(0, new Number(chgsOutCell.getValue())))
+      chgsOutCell.setValue(Math.min(0, new Number(chgsOutCell.getValue()) - 1))
     }
   };
 

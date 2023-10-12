@@ -128,13 +128,50 @@ function checkOut(e) {
       let cbCol = findHeader("Chromebooks", BulkAccounts)
       let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)
       
+      cbCell.getValue().split(",").forEach((devPlusDate) => {
+        let splitDev = devPlusDate.toString().replaceAll(")", "").trim().split("(")
+        splitDevs.push(splitDev)
+      })
 
+      splitDevs.push([cbAssetTag, finalDue])
+      splitDevs.sort(function (a, b) {
+        return a[1] - b[1];
+      })
+
+      let newDevs = splitDevs.map((splitDev) => {
+        let unsplit = splitDev[0].trim() + " (" + dateToTwos(splitDev[1]) + ")"
+        return unsplit
+      })
+
+      cbCell.setValue(newDevs.join(", "))
       
     }
 
-    if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {}
+    if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
+      try {
+        let hsCol = findHeader("Hotspots", BulkAccounts);
+        let hsCell = BulkAccounts.getRange(accountRow, hsCol, 1, 1);
+        // Logger.log(hsRange.getValues())
+        // Logger.log(hsVals)
+        if (hsCell.isBlank()) {
+          // Logger.log("hsRange was blank")
+          hsCell.setValue(hsAssetTag)
+        } else {
+          // Logger.log("hsRange was NOT blank it was " + hsRange.getValues())
+          hsCell.setValue(hsCell.getValue().split(",").push(hsAssetTag).join(", "))
+        }
+        
+        itemsArr.push(hsAssetTag)
+      } catch (e) {
+        MAIL.error(e);
+        itemsArr.push(`${hsAssetTag}(fail)`)
+      }
+    }
 
-    if (devicesOut.includes('Charger')) {}
+    if (devicesOut.includes('Charger')) {
+      itemsArr.push("1 charger")
+      ACC.addCharger(asgnMail, finalDue)
+    }
   }
   
   let realDevice = new RegExp(/Lakers \w\d{3}/)

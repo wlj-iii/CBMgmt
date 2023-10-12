@@ -23,8 +23,8 @@ function checkIn(e) {
   
   if (items.includes("Hotspot") && hsAssetTag !== "") {
     ACC.removeStuHotspot(hsAssetTag);
+    ACC.removeBulkHotspot(hsAssetTag)
     itemsArr.unshift(hsAssetTag)
-    // TODO: Bulk User Hotspot Check in
   }
   
   if (cbAssetTag != "") {
@@ -44,7 +44,7 @@ function checkIn(e) {
     }
     try {
       ACC.removeStuDevice(cbAssetTag);
-      // TODO Bulk User CB Check In
+      ACC.removeBulkDevice(cbAssetTag);
     } catch (e) {
       MAIL.error(e);
     }
