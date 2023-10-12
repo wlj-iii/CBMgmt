@@ -5,8 +5,6 @@ const Boneyard = SpreadsheetApp.getActive().getSheetByName('Boneyard');
 const MissingInAction = SpreadsheetApp.getActive().getSheetByName('MIA');
 const inactiveOU = HouseRules.createTextFinder("Inactive OU").findNext().offset(0, 1).getValue();
 const inactiveOuId = AdminDirectory.Orgunits.get("my_customer", inactiveOU.toString().slice(1)).orgUnitId
-const sickOU = HouseRules.createTextFinder("Sick OU").findNext().offset(0, 1).getValue();
-const sickOuId = AdminDirectory.Orgunits.get("my_customer", sickOU.toString().slice(1)).orgUnitId
 const formulas = [["=ArrayFormula(if(isblank($A$2:$A), \"\", split($A$2:$A, \" - \", false)))"]];
 
 let legions = [ActiveDuty, Reserves, SickBay, Boneyard, MissingInAction];
@@ -134,8 +132,8 @@ const LGN = new (function () {
     let newDevice = {
       "annotatedAssetId": `${deviceName} Faulty ${faultyList}`,
       "annotatedUser": "",
-      "orgUnitPath": `${sickOU}`,
-      "orgUnitId": `${sickOuId}`,
+      "orgUnitPath": `${inactiveOU}`,
+      "orgUnitId": `${inactiveOuId}`,
       "notes": `Last assigned to ${lastAsgn}` + '\u000D' + `Last used by ${lastUser}` + '\u000D' + `Presented with ${explanation}`
     }
     
