@@ -49,6 +49,7 @@ function checkOut(e) {
     if (devicesOut.includes('Chromebook entirely') && cbAssetTag !== "") {
       itemsArr.push(cbAssetTag)
       ACC.removeStuDevice(cbAssetTag)
+      ACC.removeBulkDevice(cbAssetTag)
       let dev1Col = findHeader("First Chromebook Out", SingleAccounts);
       let accLastDev = account.getCell(1, dev1Col)
       .getNextDataCell(SpreadsheetApp.Direction.NEXT)
@@ -119,19 +120,21 @@ function checkOut(e) {
   } else {
     let account = ACC.getAccount(asgnMail);
     let accountRow = account.getRow();
-    // TODO bulk device checkout
     if (devicesOut.includes('Chromebook entirely') && cbAssetTag !== "") {
       itemsArr.push(cbAssetTag)
       ACC.removeBulkDevice(cbAssetTag)
+      ACC.removeStuDevice(cbAssetTag)
 
       let splitDevs = []
       let cbCol = findHeader("Chromebooks", BulkAccounts)
       let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)
       
-      cbCell.getValue().split(",").forEach((devPlusDate) => {
+      if (!cbCell.isBlank()) {
+        cbCell.getValue().split(",").forEach((devPlusDate) => {
         let splitDev = devPlusDate.toString().replaceAll(")", "").trim().split("(")
         splitDevs.push(splitDev)
       })
+      }
 
       splitDevs.push([cbAssetTag, finalDue])
       splitDevs.sort(function (a, b) {

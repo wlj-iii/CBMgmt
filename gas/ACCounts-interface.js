@@ -190,9 +190,9 @@ const ACC = new (function () {
         )
         .setNumberFormat(["MM/DD/YY"]);
     } else {
-      let chgsCol = findHeader("Chargers Out", BulkAccounts);
-      let chgsOutCell = BulkAccounts.getRange(account.getRow(), chgsCol, 1, 1);
-      chgsOutCell.setValue(Math.min(0, new Number(chgsOutCell.getValue()) - 1))
+      // let chgsCol = findHeader("Chargers Out", BulkAccounts);
+      // let chgsOutCell = BulkAccounts.getRange(account.getRow(), chgsCol, 1, 1);
+      // chgsOutCell.setValue(Math.min(0, new Number(chgsOutCell.getValue()) - 1))
     }
   };
 
@@ -224,9 +224,9 @@ const ACC = new (function () {
       datesList.setValue(currentDates.filter(function(el) { return el; }).map((currentDate) => dateToTwos(currentDate)).sort().join(", ").toString().trim())
       .setNumberFormat(["MM/DD/YY"]);
     } else {
-      let chgsCol = findHeader("Chargers Out", BulkAccounts);
-      let chgsOutCell = BulkAccounts.getRange(accountRow, chgsCol, 1, 1);
-      chgsOutCell.setValue(new Number(chgsOutCell.getValue()) + 1)
+      // let chgsCol = findHeader("Chargers Out", BulkAccounts);
+      // let chgsOutCell = BulkAccounts.getRange(accountRow, chgsCol, 1, 1);
+      // chgsOutCell.setValue(new Number(chgsOutCell.getValue()))
     }
   };
 
@@ -254,7 +254,7 @@ const ACC = new (function () {
       let foundUsr = currentAccount[i].getRow();
 
       let hspRange = BulkAccounts.getRange(foundUsr, devCol, 1, 1);
-      let hspList = chromieRange.getValue().split(",").filter((hsp) => hsp.toString().search(hspDueRegEx) == -1).join(", ")
+      let hspList = hspRange.getValue().split(",").filter((hsp) => hsp.toString().search(hspDueRegEx) == -1).join(", ")
 
       hspRange.setValue(hspList)
     }
@@ -611,7 +611,7 @@ const ACC = new (function () {
   
 
   this.removeBulkDevice = (deviceTag) => {
-    let devDueRegEx = new RegExp(`${deviceTag}.{13}`)
+    let devDueRegEx = new RegExp(`${deviceTag}.{11}`)
     let currentAccount = BulkAccounts.createTextFinder(deviceTag)
       .matchEntireCell(false)
       .findAll()
