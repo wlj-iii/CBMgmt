@@ -97,7 +97,7 @@ const ACC = new (function () {
       BulkAccounts.getLastRow(),
       1,
       1,
-      SingleAccounts.getLastColumn()
+      BulkAccounts.getLastColumn()
     );
   };
 
@@ -147,7 +147,7 @@ const ACC = new (function () {
 
   this.removeCharger = (email) => {
     let account = this.getAccount(email);
-    let chgsOutCol = account
+    let chgsOutCol = account // this is done the long way to be sheet-agnostic
       .getSheet()
       .getRange(1, 1, 1, account.getSheet().getLastColumn())
       .createTextFinder("Chargers Out")
