@@ -175,7 +175,7 @@ const ACC = new (function () {
         .trim()
         .split(",")
         .map((el) => {
-          let date = new Date(el?.toString().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
+          let date = new Date(el?.toString().trim().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
           return date // array does not sort properly unless dates recieve full year and are converted to epoch
           })
         .sort()
@@ -222,7 +222,7 @@ const ACC = new (function () {
         .trim()
         .split(",")
         .map((el) => {
-          let date = new Date(el?.toString().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
+          let date = new Date(el?.toString().trim().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
           return date // array does not sort properly unless dates recieve full year and are converted to epoch
           })
         .sort()
