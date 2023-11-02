@@ -174,7 +174,10 @@ const ACC = new (function () {
         .toString()
         .trim()
         .split(",")
-        .map((currentDate) => new Date(currentDate))
+        .map((el) => {
+          let date = new Date(el?.toString().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
+          return date // array does not sort properly unless dates recieve full year and are converted to epoch
+          })
         .sort()
         .reverse();
       currentDates.splice(currentDates.indexOf(Math.min(currentDates)), 1);
@@ -213,13 +216,20 @@ const ACC = new (function () {
       let datesList = SingleAccounts.getRange(accountRow, chgsDueCol, 1, 1);
       // Logger.log("dListCell = " + datesList.getA1Notation())
       // Logger.log("dList = " + datesList.getValue())
-      let currentDates = datesList.getValue().toString().trim().split(",")
-      // Logger.log("pre:" + `\n` + currentDates)
-      currentDates.map((currentDate) => {new Date(currentDate)}).sort()
-      // Logger.log("post:" + `\n` + currentDates)
-      currentDates.push(new Date(dueDate));
+      let currentDates = datesList
+        .getValue()
+        .toString()
+        .trim()
+        .split(",")
+        .map((el) => {
+          let date = new Date(el?.toString().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
+          return date // array does not sort properly unless dates recieve full year and are converted to epoch
+          })
+        .sort()
+        .push(new Date(dueDate).getTime());
+
       // Logger.log("pushed:" + `\n` + currentDates)
-      datesList.setValue(currentDates.filter(function(el) { return el; }).map((currentDate) => dateToTwos(currentDate)).sort().join(", ").toString().trim())
+      datesList.setValue(currentDates.filter(function(el) { return el; }).sort().map((currentDate) => dateToTwos(currentDate)).join(", ").toString().trim())
       .setNumberFormat(["MM/DD/YY"]);
     } else {
       // let chgsCol = findHeader("Chargers Out", BulkAccounts);
