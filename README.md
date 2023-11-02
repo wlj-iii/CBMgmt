@@ -6,7 +6,7 @@
 
 # The Laker Internal Asset Manager
 
-![NPM](https://img.shields.io/npm/l/cbmgmt)
+![NPM](https://img.shields.io/npm/l/cbmgmt-green)
 ![NPM](https://img.shields.io/npm/v/cbmgmt)
 [![GitHub issues](https://img.shields.io/github/issues/wlj-iii/lak-int-acc-mgr)](https://github.com//wlj-iii/lak-int-acc-mgr/issues)
 [![GitHub forks](https://img.shields.io/github/forks/wlj-iii/lak-int-acc-mgr)](https://github.com/wlj-iii/lak-int-acc-mgr/network)
