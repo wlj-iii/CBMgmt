@@ -75,9 +75,9 @@ const ACC = new (function () {
     rowContents.push(email);
     rowContents.push(this.fullName(email));
     rowContents.push("");
-    for (let i = 0; i < 2; i++) {
-      rowContents.push("0");
-    }
+    rowContents.push("0");
+    rowContents.push("FALSE");
+    rowContents.push("0");
     SingleAccounts.appendRow(rowContents);
     return SingleAccounts.getRange(
       SingleAccounts.getLastRow(),
