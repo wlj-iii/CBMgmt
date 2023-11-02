@@ -72,12 +72,13 @@ const ACC = new (function () {
 
   this.createSingleAcc = (email) => {
     let rowContents = [];
-    rowContents.push(email);
-    rowContents.push(this.fullName(email));
-    rowContents.push("");
-    rowContents.push("0");
-    rowContents.push("FALSE");
-    rowContents.push("0");
+
+    rowContents[findHeader("Student Email", SingleAccounts)-1] = email
+    rowContents[findHeader("Student Name", SingleAccounts)-1] = this.fullName(email)
+    rowContents[findHeader("Balance", SingleAccounts)-1] = ""
+    rowContents[findHeader("YTD Points", SingleAccounts)-1] = "0"
+    rowContents[findHeader("ECF", SingleAccounts)-1] = "FALSE"
+    rowContents[findHeader("Chargers Out", SingleAccounts)-1] = "0"
     SingleAccounts.appendRow(rowContents);
     return SingleAccounts.getRange(
       SingleAccounts.getLastRow(),
@@ -226,10 +227,18 @@ const ACC = new (function () {
           return date // array does not sort properly unless dates recieve full year and are converted to epoch
           })
         .sort()
-        .push(new Date(dueDate).getTime());
+        
+      currentDates.push(new Date(dueDate).getTime());
 
-      // Logger.log("pushed:" + `\n` + currentDates)
-      datesList.setValue(currentDates.filter(function(el) { return el; }).sort().map((currentDate) => dateToTwos(currentDate)).join(", ").toString().trim())
+      Logger.log("pushed:" + `\n` + currentDates)
+      datesList.setValue(
+        currentDates
+          .filter(function(el) { return el; })
+          .sort()
+          .map((currentDate) => dateToTwos(currentDate))
+          .join(", ")
+          .toString()
+          .trim())
       .setNumberFormat(["MM/DD/YY"]);
     } else {
       // let chgsCol = findHeader("Chargers Out", BulkAccounts);
