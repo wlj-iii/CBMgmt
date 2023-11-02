@@ -81,7 +81,7 @@ const ACC = new (function () {
     rowContents[findHeader("Chargers Out", SingleAccounts)-1] = "0"
     SingleAccounts.appendRow(rowContents);
     
-    let transaction = new Txn(email, "Account Created", new Date(), "Student Accounts Sheet");
+    let transaction = new Txn(email, "Account Created", new Date(), `${this.fullName(email)} (Student)`);
     transaction.commit()
 
     return SingleAccounts.getRange(
@@ -99,7 +99,7 @@ const ACC = new (function () {
     rowContents.push("0");
     BulkAccounts.appendRow(rowContents);
     
-    let transaction = new Txn(email, "Account Created", new Date(), "Bulk Accounts Sheet");
+    let transaction = new Txn(email, "Account Created", new Date(), `${this.fullName(email)} (Bulk User)`);
     transaction.commit()
     
     return BulkAccounts.getRange(
