@@ -80,6 +80,10 @@ const ACC = new (function () {
     rowContents[findHeader("ECF", SingleAccounts)-1] = "FALSE"
     rowContents[findHeader("Chargers Out", SingleAccounts)-1] = "0"
     SingleAccounts.appendRow(rowContents);
+    
+    let transaction = new Txn(email, "Account Created", new Date(), "Student Accounts Sheet");
+    transaction.commit()
+
     return SingleAccounts.getRange(
       SingleAccounts.getLastRow(),
       1,
@@ -94,6 +98,10 @@ const ACC = new (function () {
     rowContents.push(this.fullName(email));
     rowContents.push("0");
     BulkAccounts.appendRow(rowContents);
+    
+    let transaction = new Txn(email, "Account Created", new Date(), "Bulk Accounts Sheet");
+    transaction.commit()
+    
     return BulkAccounts.getRange(
       BulkAccounts.getLastRow(),
       1,
