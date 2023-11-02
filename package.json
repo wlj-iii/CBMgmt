@@ -1,6 +1,6 @@
 {
   "name": "cbmgmt",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "description": "Google Workspace-based Asset Manager",
   "main": "event-handler-(START-HERE).js",
   "scripts": {
@@ -30,9 +30,7 @@
   ],
   "author": "WLJ",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/wlj-iii/CBMgmt/issues"
-  },
+  "bugs": "https://tables.area120.google.com/authform/a28_78_dKEN4vCKOm2C_FS/t/bYA9RUCcmxd59AsqK1mkXU8I97ywuKtseddZvaMGp_4b9cIL2hs4bmI8mRu_-wE4eo",
   "homepage": "https://github.com/wlj-iii/CBMgmt#readme",
   "dependencies": {
     "@google/clasp": "^2.4.2"
