@@ -32,18 +32,23 @@ function latestFirst(sheet) {
 
 function copySS2(envName) {
   let destFolder = DriveApp.getFolderById(v3).getFoldersByName(envName).next().getId()
-  let destFile = DriveApp.getFolderById(destFolder).getFilesByName(`CBMgmt - ${envName}`).next().getId()
+  let destFileId = DriveApp.getFolderById(destFolder).getFilesByName(`CBMgmt - ${envName}`).next().getId()
+  let destFile = SpreadsheetApp.openById(destFileId)
 
   let sheets = SpreadsheetApp.getActive().getSheets();
   for (let i = 0; i < sheets.length; i++) {
     let currSheet = sheets[i]
-    currSheet.copyTo(destFile)
+    let currShtName = currSheet.getName().toString();
+    if (!currShtName.includes("Form")) {
+      currSheet.copyTo(destFile)
+    }
   }
 
   let newSheets = destFile.getSheets()
-  for (let i = newSheets.length; i > 0; i--) {
+  for (let i = 0; i < newSheets.length; i++) {
     let currSheet = newSheets[i]
-    if (!currSheet.getName().includes("Copy")) {
+    let currShtName = currSheet.getName().toString();
+    if (!currShtName.includes("Copy") && !currShtName.includes("Form")) {
       destFile.deleteSheet(currSheet)
     }
   }

@@ -40,8 +40,5 @@ function iShouldntBeHere() {
 
 
 function jShouldntBeHere() {
-  // let items = ['Chromebook', 'Charger']
-  // const transaction = new Txn("ascaddan2022@lakerschools.org", "Check In", new Date(), items)
-  // transaction.invoiceSent = true
-  // transaction.commit()
+  copySS2Dev()
 };
