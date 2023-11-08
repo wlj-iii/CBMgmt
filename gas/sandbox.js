@@ -40,5 +40,5 @@ function iShouldntBeHere() {
 
 
 function jShouldntBeHere() {
-  copySS2Dev()
+  Logger.log("Hello World!")
 };

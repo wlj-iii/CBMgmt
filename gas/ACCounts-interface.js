@@ -763,7 +763,7 @@ function dailyCheckDue() {
     
 
     cost = priceItems(items, userMail, "Overdue")
-    // Logger.log(cost)
+    Logger.log(cost)
 
     ACC.charge(userMail, 'missing', items, cost, "Overdue")
     let transaction = new Txn(userMail, "Overdue Items", new Date(), account)

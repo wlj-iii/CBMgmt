@@ -1,7 +1,3 @@
-const ssId = SpreadsheetApp.getActive().getId()
-const currentEnv = DriveApp.getFileById(ssId).getParents().next().getId()
-const v3 = DriveApp.getFolderById(currentEnv).getParents().next().getId()
-
 const HouseRules = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("House Rules");
 const Prices = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pricing");
 const SingleAccounts = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Accounts");

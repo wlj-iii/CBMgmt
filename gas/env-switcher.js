@@ -6,6 +6,12 @@
  */
 
 function copySS2(envName) {
+    const ssId = SpreadsheetApp.getActive().getId()
+    const currentEnv = DriveApp.getFileById(ssId).getParents().next().getId()
+    const v3 = DriveApp.getFolderById(currentEnv).getParents().next().getId()
+  
+  
+
     let destFolder = DriveApp.getFolderById(v3).getFoldersByName(envName).next().getId()
     let destFileId = DriveApp.getFolderById(destFolder).getFilesByName(`CBMgmt - ${envName}`).next().getId()
     let destFile = SpreadsheetApp.openById(destFileId)
