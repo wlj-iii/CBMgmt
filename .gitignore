@@ -1,5 +1,6 @@
 **/.gitconfig
 **/.clasprsc
+**/.clasprsc.json
 **/node_modules/
 **/gas-old/
 **/.clasp.json
@@ -7,3 +8,4 @@
 **/.vscode/
 **/test.*
 gas/before-all-sheets.js
+.clasprc.json

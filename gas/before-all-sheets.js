@@ -1,3 +1,7 @@
+const ssId = SpreadsheetApp.getActive().getId()
+const currentEnv = DriveApp.getFileById(ssId).getParents().next().getId()
+const v3 = DriveApp.getFolderById(currentEnv).getParents().next().getId()
+
 const HouseRules = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("House Rules");
 const Prices = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pricing");
 const SingleAccounts = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Accounts");
@@ -25,3 +29,34 @@ function latestFirst(sheet) {
   let timeIndex = findHeader('Timestamp');
   sheet.sort(timeIndex, false);
 };
+
+function copySS2(envName) {
+  let destFolder = DriveApp.getFolderById(v3).getFoldersByName(envName).next().getId()
+  let destFile = DriveApp.getFolderById(destFolder).getFilesByName(`CBMgmt - ${envName}`).next().getId()
+
+  let sheets = SpreadsheetApp.getActive().getSheets();
+  for (let i = 0; i < sheets.length; i++) {
+    let currSheet = sheets[i]
+    currSheet.copyTo(destFile)
+  }
+
+  let newSheets = destFile.getSheets()
+  for (let i = newSheets.length; i > 0; i--) {
+    let currSheet = newSheets[i]
+    if (!currSheet.getName().includes("Copy")) {
+      destFile.deleteSheet(currSheet)
+    }
+  }
+
+  let filteredSheets = destFile.getSheets()
+  for (let i = 0; i < filteredSheets.length; i++) {
+    let currSheet = filteredSheets[i]
+    let currName = currSheet.getSheetName().toString()
+    let newName = currName.replace("Copy of ", "")
+    currSheet.setName(newName)
+  }
+}
+
+function copySS2Dev() {
+  copySS2("Dev")
+}
