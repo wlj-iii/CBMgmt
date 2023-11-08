@@ -588,7 +588,7 @@ const ACC = new (function () {
         case "Unforeseeable Accident":
           return 1;
         case "Overdue":
-          return 1;
+          return 2;
         case "Preventable Causes":
           return 2;
       }
