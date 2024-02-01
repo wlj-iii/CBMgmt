@@ -349,21 +349,25 @@ const ACC = new (function () {
           2 * i + Number(findHeader("First Chromebook Out", SingleAccounts));
         let deviceName = userRow[deviceCol - 1];
 
-        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toDateString();
-        if (deviceDue == "Invalid Date") {
+        let deviceDue = new Date(userRow[deviceCol - 1 + 1]) //.toDateString();
+        if (deviceDue.toDateString() == "Invalid Date") {
           deviceDue = "end of year";
         }
         if (deviceName) {
-          accountDevices.push(deviceName + " (due " + deviceDue + ")");
+          // accountDevices.push(deviceName + " (due " + deviceDue + ")");
+          accountDevices.push([deviceName, deviceDue]);
         } else break;
       }
 
       if (accountDevices.length === 0) {
         cbksReport = "No Chromebooks";
       } else if (accountDevices.length === 1) {
-        cbksReport = accountDevices;
+        cbksReport = accountDevices[0][0] + " (due " + accountDevices[0][1].toDateString() + ")"
       } else {
-        cbksReport = accountDevices.join("\r\n\t");
+        cbksReport = accountDevices
+          .sort((a,b) => a[1] - b[1])
+          .map(devAndDate => devAndDate[0] + " (due " + devAndDate[1].toDateString() + ")")
+          .join("\r\n\t");
       }
       devsReport.push(cbksReport)
       
@@ -453,21 +457,25 @@ const ACC = new (function () {
           2 * i + Number(findHeader("First Chromebook Out", SingleAccounts));
         let deviceName = userRow[deviceCol - 1];
 
-        let deviceDue = new Date(userRow[deviceCol - 1 + 1]).toLocaleDateString("es-MX");
+        let deviceDue = new Date(userRow[deviceCol - 1 + 1])
         if (deviceDue == "Invalid Date") {
           deviceDue = "a fin de año";
         }
         if (deviceName) {
-          accountDevices.push(deviceName + " (vence al " + deviceDue + ")");
+          // accountDevices.push(deviceName + " (vence al " + deviceDue + ")");
+          accountDevices.push([deviceName, deviceDue]);
         } else break;
       }
 
       if (accountDevices.length === 0) {
         cbksReport = "Sin Chromebooks";
       } else if (accountDevices.length === 1) {
-        cbksReport = accountDevices;
+        cbksReport = accountDevices[0][0] + " (vence al " + accountDevices[0][1].toLocaleDateString("es-MX") + ")";
       } else {
-        cbksReport = accountDevices.join("\r\n\t");
+        cbksReport = accountDevices
+          .sort((a,b) => a[1] - b[1])
+          .map(devAndDate => devAndDate[0] + " (vence al " + devAndDate[1].toLocaleDateString("es-MX") + ")")
+          .join("\r\n\t");
       }
       devsReport.push(cbksReport)
 

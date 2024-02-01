@@ -58,7 +58,7 @@ const MAIL = new (function () {
       GmailApp.sendEmail(me, 'Alias not found', 'You should check the script and the account\'s settings to make sure you spelled the alias address correctly.');
     } else {
       let maskIndex = aliases.indexOf(maskAcc);
-      GmailApp.sendEmail(redirect, "CBMgmt is complaining", e, {
+      GmailApp.sendEmail('williamljoslyn@gmail.com', "CBMgmt is complaining", e, {
         'from': aliases[maskIndex],
         'name': maskName,
         'replyTo': 'williamljoslyn@gmail.com',

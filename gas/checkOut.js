@@ -127,7 +127,7 @@ function checkOut(e) {
 
       let splitDevs = []
       let cbCol = findHeader("Chromebooks", BulkAccounts)
-      let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)[0][0]
+      let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1);
       
       if (!cbCell.isBlank()) {
         cbCell.getValue().split(",").forEach((devPlusDate) => {
@@ -153,7 +153,7 @@ function checkOut(e) {
     if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
       try {
         let hsCol = findHeader("Hotspots", BulkAccounts);
-        let hsCell = BulkAccounts.getRange(accountRow, hsCol, 1, 1)[0][0];
+        let hsCell = BulkAccounts.getRange(accountRow, hsCol, 1, 1);
         // Logger.log(hsRange.getValues())
         // Logger.log(hsVals)
         if (hsCell.isBlank()) {
@@ -161,7 +161,11 @@ function checkOut(e) {
           hsCell.setValue(hsAssetTag)
         } else {
           // Logger.log("hsRange was NOT blank it was " + hsRange.getValues())
-          hsCell.setValue(hsCell.getValue().split(",").push(hsAssetTag).join(", "))
+          // Logger.log(hsAssetTag)
+          let hspList = hsCell.getValue().split(",")
+          hspList.push(hsAssetTag) // return value of arr.push is arr.length, not the new array  
+          // Logger.log(hspList.join(", "))
+          hsCell.setValue(hspList.join(", "))
         }
         
         itemsArr.push(hsAssetTag)

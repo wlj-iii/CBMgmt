@@ -35,7 +35,10 @@ function iShouldntBeHere() {
   // Logger.log(new Date(new Date('01/01/24').setHours(16)).toLocaleString())
   // Logger.log(AdminDirectory.Chromeosdevices.get("my_customer", "d3c2e57c-f1fb-4177-9da8-838c0548c027"))
   // dailyCheckDue()
-  
+
+  let temp = ACC.report('rkula2026@lakerschools.org')
+  Logger.log(temp)
+  return temp
 }
 
 
