@@ -59,7 +59,7 @@ function checkIn(e) {
     if (cost > 0) {
       transaction.invoiceSent = true
     }
-    ACC.charge(retMail, 'faulty', faulties, cost, retCategory)
+    ACC.charge(retMail, 'faulty', faulties, cost, retCategory, itemsArr)
   }
   
   transaction.commit()

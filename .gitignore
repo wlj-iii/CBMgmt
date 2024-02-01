@@ -9,3 +9,4 @@
 **/test.*
 gas/before-all-sheets.js
 .clasprc.json
+.DS_Store

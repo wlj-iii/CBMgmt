@@ -127,33 +127,33 @@ function checkOut(e) {
 
       let splitDevs = []
       let cbCol = findHeader("Chromebooks", BulkAccounts)
-      let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)
+      let cbCell = BulkAccounts.getRange(accountRow, cbCol, 1, 1)[0][0]
       
       if (!cbCell.isBlank()) {
         cbCell.getValue().split(",").forEach((devPlusDate) => {
-        let splitDev = devPlusDate.toString().replaceAll(")", "").trim().split("(")
-        splitDevs.push(splitDev)
-      })
+          let splitDev = devPlusDate.toString().replaceAll(")", "").trim().split("(")
+          splitDevs.push(splitDev)
+        })
       }
-
+      
       splitDevs.push([cbAssetTag, finalDue])
       splitDevs.sort(function (a, b) {
         return a[1] - b[1];
       })
-
+      
       let newDevs = splitDevs.map((splitDev) => {
         let unsplit = splitDev[0].trim() + " (" + dateToTwos(splitDev[1]) + ")"
         return unsplit
       })
-
+      
       cbCell.setValue(newDevs.join(", "))
       
     }
-
+    
     if (devicesOut.includes('Hotspot') && hsAssetTag !== "") {
       try {
         let hsCol = findHeader("Hotspots", BulkAccounts);
-        let hsCell = BulkAccounts.getRange(accountRow, hsCol, 1, 1);
+        let hsCell = BulkAccounts.getRange(accountRow, hsCol, 1, 1)[0][0];
         // Logger.log(hsRange.getValues())
         // Logger.log(hsVals)
         if (hsCell.isBlank()) {

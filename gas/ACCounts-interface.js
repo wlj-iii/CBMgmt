@@ -81,7 +81,7 @@ const ACC = new (function () {
     rowContents[findHeader("Chargers Out", SingleAccounts)-1] = "0"
     SingleAccounts.appendRow(rowContents);
     
-    let transaction = new Txn(email, "Account Created", new Date(), `${this.fullName(email)} (Student)`);
+    let transaction = new Txn(email, "Account Created", Date(), `${this.fullName(email)} (Student)`);
     transaction.commit()
 
     return SingleAccounts.getRange(
@@ -99,7 +99,7 @@ const ACC = new (function () {
     rowContents.push("0");
     BulkAccounts.appendRow(rowContents);
     
-    let transaction = new Txn(email, "Account Created", new Date(), `${this.fullName(email)} (Bulk User)`);
+    let transaction = new Txn(email, "Account Created", Date(), `${this.fullName(email)} (Bulk User)`);
     transaction.commit()
     
     return BulkAccounts.getRange(
@@ -520,7 +520,7 @@ const ACC = new (function () {
     }
   };
 
-  this.charge = (userMail, faultOrMiss, items, cost, category) => {
+  this.charge = (userMail, faultOrMiss, items, cost, category, tags) => {
     let localCharge = [];
     let secretaryCharge = [];
     let problem = engProb(faultOrMiss, items);
@@ -538,6 +538,7 @@ const ACC = new (function () {
       localCharge[findHeader("Student Full") - 1] = userFull;
       // Logger.log(localCharge[findHeader("Student Full") - 1]);
       localCharge[findHeader("Reason") - 1] = problem;
+      localCharge[findHeader("Asset Tag(s)") - 1] = tags;
       localCharge[findHeader("Remaining Charge") - 1] = "";
       localCharge[findHeader("Resolved") - 1] = "FALSE";
       localCharge[findHeader("Date") - 1] = new Date();
@@ -754,9 +755,13 @@ function dailyCheckDue() {
       }
     }
     let devs = account.filter((item) => item.toString().search(cbRegEx) > -1)
-    devs.forEach(
-      // (foundCB) => {LGN.missing(foundCB.toString())}
-      (foundCB) => {Logger.log(foundCB.toString())}
+    // devs.forEach(
+      // (foundCB) => {LGN.missing(foundCB.toString())} // is there a reason this is not on?
+      // (foundCB) => {Logger.log(foundCB.toString())}
+      // )
+    let hs = account.filter((item) => item.toString().search(hsRegEx) > -1)
+    hs.forEach(
+      (h) => {devs.unshift(h)}
     )
     items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
     // Logger.log(items)
@@ -765,8 +770,8 @@ function dailyCheckDue() {
     cost = priceItems(items, userMail, "Overdue")
     Logger.log(cost)
 
-    ACC.charge(userMail, 'missing', items, cost, "Overdue")
-    let transaction = new Txn(userMail, "Overdue Items", new Date(), account)
+    ACC.charge(userMail, 'missing', items, cost, "Overdue", devs)
+    let transaction = new Txn(userMail, "Overdue Items", Date(), account)
     if (cost > 0) {
       transaction.invoiceSent = true
     }
