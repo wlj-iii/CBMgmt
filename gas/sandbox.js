@@ -17,7 +17,7 @@ function iShouldntBeHere() {
     // )
   // Logger.log(newBulkDevs)
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
-  // ACC.removeCharger('ascaddan2022@lakerschools.org')
+  ACC.addCharger('ascaddan2022@lakerschools.org', dateToTwos(new Date()))
   // ACC.removeCharger("lakintaccmgr@lakerschools.org")
   // ACC.removeBulkDevice(`${cb}`)
   // Logger.log(ACC.outstandingFines(testEmail))/
@@ -35,9 +35,6 @@ function iShouldntBeHere() {
   // Logger.log(new Date(new Date('01/01/24').setHours(16)).toLocaleString())
   // Logger.log(AdminDirectory.Chromeosdevices.get("my_customer", "d3c2e57c-f1fb-4177-9da8-838c0548c027"))
   // dailyCheckDue()
-
-  let temp = ACC.attemptClose('lakintaccmgr@lakerschools.org')
-  return temp
 }
 
 
