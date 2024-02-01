@@ -404,11 +404,13 @@ const ACC = new (function () {
       }
       devsReport.push(chgsReport)
 
-      if (cbksReport == "No Chromebooks" && hotspotReport == "") {
+      if (cbksReport == "No Chromebooks" && hotspotReport == "" && chgsReport.includes("no chargers")) {
+        report = "\t" + cbksReport + ", " + chgsReport;
+        this.attemptClose(userMail)
+      } else if (cbksReport == "No Chromebooks" && hotspotReport == "") {
         report = "\t" + cbksReport + ", " + chgsReport;
       } else {
-        report =
-          "\t" + devsReport.join("\r\n\t");
+        report = "\t" + devsReport.join("\r\n\t");
       }
 
       return report;
@@ -659,6 +661,62 @@ const ACC = new (function () {
       chromieRange.setValue(chromiesList)
     }
   };
+
+  this.attemptClose = (userMail) => {
+    let currYear = '20' + getSY();
+    let syRegex = new RegExp(/(20\d{2})/, "gi")
+    let userOU = AdminDirectory.Users.get(userMail).orgUnitPath
+    let userYear = userOU.match(syRegex)
+    Logger.log(`Current Year is ${currYear}`)
+    Logger.log(`User Year is ${userYear}`)
+    let probablyFinal
+
+    if(userOU.includes(currYear)) {
+
+      let numDaysBeforeEOY = 7
+      
+      let userEOY = new Date(DatesSheet.createTextFinder("Senior EOY").findNext().offset(0, 1).getValue());
+      // Logger.log(userEOY)
+      let msBeforeEOY = numDaysBeforeEOY * 24 * 60 * 60 * 1000
+      // Logger.log(msBeforeEOY/(24*3600*1000))
+
+      // Logger.log(`Difference is ${Math.abs(userEOY - new Date())/(24*3600*1000)}`)
+      if (Math.abs(userEOY - new Date()) < msBeforeEOY) {
+        probablyFinal = true;
+      } else {
+        probablyFinal = false;
+      }
+    } else {
+      probablyFinal = false;
+    }
+
+    let report = ACC.report(userMail)
+
+    if (!report.includes("No Chromebooks") || !report.includes("no chargers") || report.includes("Lakers ATT")) {
+      return
+    }
+    
+
+    if (userYear && currYear > userYear) {
+      Logger.log("Graduated student account is being closed")
+      this._closeAccount(userMail)
+    } else if (probablyFinal && currYear == userYear) {
+      Logger.log("Senior account is being closed: close enough to EOY")
+      this._closeAccount(userMail)
+    } else if (!userYear) {
+      Logger.log("Non-student account is being closed")
+      this._closeAccount(userMail)
+    }
+  };
+
+  this._closeAccount = (userMail) => {
+    // return
+    let account = this.getAccount(userMail).getRow()
+    SingleAccounts.deleteRow(account)
+    
+    let transaction = new Txn(email, "Account Closed", Date(), `${this.fullName(userMail)}`);
+    transaction.commit()
+  };
 })();
 
 /* function hasUnsentOverdue(accountRange) {
@@ -776,7 +834,7 @@ function dailyCheckDue() {
     
 
     cost = priceItems(items, userMail, "Overdue")
-    Logger.log(cost)
+    // Logger.log(cost)
 
     ACC.charge(userMail, 'missing', items, cost, "Overdue", devs)
     let transaction = new Txn(userMail, "Overdue Items", Date(), account)
@@ -785,6 +843,23 @@ function dailyCheckDue() {
     }
     transaction.commit()
   })
+
+  if (today.getMonth() != 7 && today.getDate() != 1) {
+    return
+  } else {
+    // means today is august first
+    let newSY = new Number(getSY());
+    let oldSY = newSY-1;
+    let oldSyFull = 2000+oldSY
+    
+    let potentialGrads = SingleAccounts.createTextFinder(`${oldSyFull}@lakerschools.org`).matchEntireCell(false).findAll()
+    potentialGrads.forEach((rng) => {
+      let userRow = rng.getRow()
+      let userMail = SingleAccounts.getRange(userRow, 1, 1, 1).getValue();
+      ACC.attemptClose(userMail)
+    })
+
+  }
 
 }
 

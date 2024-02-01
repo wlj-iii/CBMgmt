@@ -27,19 +27,19 @@ function checkOut(e) {
         .findNext()
         .offset(0, 1)
         .getValue();
-        }
-        break;
-        case "Tomorrow":
-          let tomorrow = new Date().setDate(today.getDate() + 1);
-          finalDue = checkHoliday(tomorrow);
-          break;
-          case "Today":
-            finalDue = dateToTwos(today)
-            break;
-            case "OTHER":
-              finalDue = checkHoliday(customDue);
-              break;
-            }
+      }
+      break;
+    case "Tomorrow":
+      let tomorrow = new Date().setDate(today.getDate() + 1);
+      finalDue = checkHoliday(tomorrow);
+      break;
+    case "Today":
+      finalDue = dateToTwos(today)
+      break;
+    case "OTHER":
+      finalDue = checkHoliday(customDue);
+      break;
+    }
             // Logger.log(`Final Due Date is ${finalDue}`);
             
   if (!ACC.isBulkUser(asgnMail)) {

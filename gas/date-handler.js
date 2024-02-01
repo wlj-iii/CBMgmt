@@ -31,7 +31,7 @@ function getSY(date) {
   let eoSyDate = new Date(DatesSheet.createTextFinder('End of Year').findNext().offset(0, 1).getValue())
 
   if (dateToTest.getTime() < boSyDate.getTime() || dateToTest.getTime() >= eoSyDate.getTime()) {
-    if (dateToTest.getMonth() >= 8) {
+    if (dateToTest.getMonth() >= 7) {
       longYear = dateToTest.getFullYear() + 1
     } else {
       longYear = dateToTest.getFullYear()

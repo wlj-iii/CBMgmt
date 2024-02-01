@@ -36,8 +36,7 @@ function iShouldntBeHere() {
   // Logger.log(AdminDirectory.Chromeosdevices.get("my_customer", "d3c2e57c-f1fb-4177-9da8-838c0548c027"))
   // dailyCheckDue()
 
-  let temp = ACC.report('rkula2026@lakerschools.org')
-  Logger.log(temp)
+  let temp = ACC.attemptClose('lakintaccmgr@lakerschools.org')
   return temp
 }
 
