@@ -40,6 +40,12 @@ function checkOut(e) {
       finalDue = checkHoliday(customDue);
       break;
     }
+    finalDue = new Date(finalDue)
+    finalDue.setHours(16)
+    finalDue.setMinutes(0)
+    finalDue.setSeconds(0)
+    finalDue.setMilliseconds(0)
+    finalDue = finalDue.toLocaleString()
             // Logger.log(`Final Due Date is ${finalDue}`);
             
   if (!ACC.isBulkUser(asgnMail)) {
