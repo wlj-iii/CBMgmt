@@ -562,7 +562,7 @@ const ACC = new (function () {
       localCharge[findHeader("Student Full") - 1] = userFull;
       // Logger.log(localCharge[findHeader("Student Full") - 1]);
       localCharge[findHeader("Reason") - 1] = problem;
-      localCharge[findHeader("Asset Tag(s)") - 1] = tags.toString();
+      localCharge[findHeader("Asset Tag(s)") - 1] = engMultiples(tags);
       localCharge[findHeader("Remaining Charge") - 1] = "";
       localCharge[findHeader("Resolved") - 1] = "FALSE";
       localCharge[findHeader("Date") - 1] = new Date();
@@ -866,7 +866,7 @@ function dailyCheckDue() {
     cost = priceItems(items, userMail, "Overdue")
     // Logger.log(cost)
 
-    ACC.charge(userMail, 'missing', items, cost, "Overdue", engMultiples(devs))
+    ACC.charge(userMail, 'missing', items, cost, "Overdue", devs)
     let transaction = new Txn(userMail, "Overdue Items", Date(), account)
     if (cost > 0) {
       transaction.invoiceSent = true
