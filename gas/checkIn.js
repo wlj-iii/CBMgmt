@@ -37,7 +37,7 @@ function checkIn(e) {
         let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
         let standardChgrAmount = priceItems("Charger")
 
-        if (feeAmount >= standardChgrAmount) {
+        if (feeAmount >= standardChgrAmount || Math.abs(feeAmount-standardChgrAmount) < 5) { // the $5 wiggle room hopefully accounts for changes in pricing
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardChgrAmount})`))
         }
         
