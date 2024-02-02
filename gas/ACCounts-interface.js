@@ -281,6 +281,27 @@ const ACC = new (function () {
       let nowDev = SingleAccounts.getRange(foundUsr, foundDev, 1, 2);
       nowDev.setValues([["", ""]]);
     }
+
+    let feesFromMIA = Charges.createTextFinder(assetTag)
+      .matchEntireCell(false)
+      .findAll();
+    for (let i = 0; i < feesFromMIA.length; i++) {
+      let foundFee = feesFromMIA[i]
+      let feeRow = foundFee.getRow();
+      let feeType = Charges.getRange(feeRow, findHeader("Reason", Charges), 1, 1).getValue().toString();
+      if (!feeType.includes("Hotspot") || !feeType.includes("missing")) {
+        return
+      } else {
+        let feeFormRange = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges))
+        let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
+        let standardHspAmount = priceItems("Hotspot")
+
+        if (feeAmount >= standardHspAmount) {
+          feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardHspAmount})`))
+        }
+        
+      }
+    }
   };
 
   this.removeBulkHotspot = (assetTag) => {
@@ -666,11 +687,17 @@ const ACC = new (function () {
       let foundFee = feesFromMIA[i]
       let feeRow = foundFee.getRow();
       let feeType = Charges.getRange(feeRow, findHeader("Reason", Charges), 1, 1).getValue().toString();
-      if (!feeType.includes("missing Chromebook")) {
+      if (!feeType.includes("Chromebook entirely") || !feeType.includes("missing")) {
         return
       } else {
-        let feeResolved = Charges.getRange(feeRow, findHeader("Resolved", Charges))
-        feeResolved.setValue("TRUE")
+        let feeFormRange = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges))
+        let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
+        let standardDevAmount = priceItems("Chromebook entirely")
+
+        if (feeAmount >= standardDevAmount) {
+          feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardDevAmount})`))
+        }
+        
       }
     }
   };
@@ -798,8 +825,12 @@ const _priceItem = (item, totalPoints, currPoints) => {
 };
 
 function priceItems(items, userMail, retCategory) {
-  let totalPoints = ACC.totalPoints(userMail, retCategory)
-  let currPoints = ACC.countPoints(userMail, retCategory)
+  let totalPoints
+  let currPoints
+  if (userMail && retCategory) {
+    totalPoints = ACC.totalPoints(userMail, retCategory)
+    currPoints = ACC.countPoints(userMail, retCategory)
+  }
   let totalPrice = items
     .toString()
     .split(",")

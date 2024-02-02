@@ -15,10 +15,11 @@ function iShouldntBeHere() {
   // let newBulkDevs = testBulkDevs.toString().split(",").forEach(
     // dev = dev.trim().replace(")", "").split("(")
     // )
-  // Logger.log(newBulkDevs)
+    // let temp = priceItems("Chromebook entirely")
+    // Logger.log(temp)
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
   // ACC.addCharger('ascaddan2022@lakerschools.org', dateToTwos(new Date()))
-  ACC.charge('ascaddan2022@lakerschools.org', "missing", "Chromebook entirely", 235, "Overdue", "Lakers 1101")
+  // ACC.charge('ascaddan2022@lakerschools.org', "missing", "Chromebook entirely", 235, "Overdue", "Lakers 1101")
   // ACC.removeBulkDevice(`${cb}`)
   // Logger.log(ACC.outstandingFines(testEmail))/
   // Logger.log(ACC.spanReport(testEmail))
@@ -35,6 +36,7 @@ function iShouldntBeHere() {
   // Logger.log(new Date(new Date('01/01/24').setHours(16)).toLocaleString())
   // Logger.log(AdminDirectory.Chromeosdevices.get("my_customer", "d3c2e57c-f1fb-4177-9da8-838c0548c027"))
   // dailyCheckDue()
+  return temp
 }
 
 

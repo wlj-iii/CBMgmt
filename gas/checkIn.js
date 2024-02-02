@@ -19,6 +19,31 @@ function checkIn(e) {
   if (items.includes("Charger")) {
     ACC.removeCharger(retMail);
     itemsArr.unshift("1 charger")
+
+    let feesFromMIA = Charges.createTextFinder(ACC.fullName(retMail))
+      .matchEntireCell(true)
+      .findAll();
+    let timesRan = 0
+
+    for (let i = feesFromMIA.length-1; i >= 0; i--) { // starts with last (oldest) charge first
+      let foundFee = feesFromMIA[i]
+      let feeRow = foundFee.getRow();
+      let feeType = Charges.getRange(feeRow, findHeader("Reason", Charges), 1, 1).getValue().toString();
+
+      if (timesRan != 0 || !feeType.includes("Charger") || !feeType.includes("missing")) {
+        return
+      } else {
+        let feeFormRange = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges))
+        let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
+        let standardChgrAmount = priceItems("Charger")
+
+        if (feeAmount >= standardChgrAmount) {
+          feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardChgrAmount})`))
+        }
+        
+        timesRan++
+      }
+    }
   }
   
   if (items.includes("Hotspot") && hsAssetTag !== "") {
