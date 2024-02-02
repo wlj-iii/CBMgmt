@@ -562,7 +562,7 @@ const ACC = new (function () {
       localCharge[findHeader("Student Full") - 1] = userFull;
       // Logger.log(localCharge[findHeader("Student Full") - 1]);
       localCharge[findHeader("Reason") - 1] = problem;
-      localCharge[findHeader("Asset Tag(s)") - 1] = engMultiples(tags);
+      localCharge[findHeader("Item(s)") - 1] = engMultiples(tags);
       localCharge[findHeader("Remaining Charge") - 1] = "";
       localCharge[findHeader("Resolved") - 1] = "FALSE";
       localCharge[findHeader("Date") - 1] = new Date();
