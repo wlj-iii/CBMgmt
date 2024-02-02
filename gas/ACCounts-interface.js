@@ -905,7 +905,7 @@ function dailyCheckDue() {
     transaction.commit()
   })
 
-  if (today.getMonth() != 7 && today.getDate() != 1) {
+  if (new Date().getMonth() != 7 && new Date().getDate() != 1) {
     return
   } else {
     // means today is august first
