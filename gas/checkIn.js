@@ -52,9 +52,17 @@ function checkIn(e) {
     itemsArr.unshift(hsAssetTag)
   }
   
-  if (cbAssetTag != "") {
+  if (cbAssetTag != "") { // Order here is specific: removes from account, then reports newly cleared account in thx email, then moves in GAdmin
     // Logger.log("starting legion process " + cbAssetTag)
+    try {
+      ACC.removeStuDevice(cbAssetTag);
+      ACC.removeBulkDevice(cbAssetTag);
+    } catch (e) {
+      MAIL.error(e);
+    }
+
     MAIL.inbound(retMail, items, cbAssetTag)
+    
     try {
       // Logger.log(cbAssetTag);
       if (cbParts.some((v) => faulties.includes(v))) {
@@ -64,12 +72,6 @@ function checkIn(e) {
         // Logger.log("healthy " + cbAssetTag)
         LGN.reserves(cbAssetTag, explanation);
       }
-    } catch (e) {
-      MAIL.error(e);
-    }
-    try {
-      ACC.removeStuDevice(cbAssetTag);
-      ACC.removeBulkDevice(cbAssetTag);
     } catch (e) {
       MAIL.error(e);
     }

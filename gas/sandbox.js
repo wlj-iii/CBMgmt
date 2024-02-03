@@ -36,10 +36,15 @@ function iShouldntBeHere() {
   // Logger.log(new Date(new Date('01/01/24').setHours(16)).toLocaleString())
   // Logger.log(AdminDirectory.Chromeosdevices.get("my_customer", "d3c2e57c-f1fb-4177-9da8-838c0548c027"))
   // dailyCheckDue()
-  return temp
+  // return temp
 }
 
 
 function jShouldntBeHere() {
-  Logger.log("Hello World!")
+  let temp = new Date()
+  temp.setHours(16)
+  temp.setMinutes(0)
+  temp.setSeconds(0)
+  temp.setMilliseconds(0)
+  Logger.log(temp.toLocaleString())
 };

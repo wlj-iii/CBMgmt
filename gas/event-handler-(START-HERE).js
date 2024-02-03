@@ -27,14 +27,17 @@ function editSwitcher(e) {
         updateFormItems();
         break;
       }
-      case "Charges":
-        if (findHeader("Resolved", Charges) !== e.range.getColumn() || e.user.getEmail() === "lakintaccmgr@lakerschools.org") {
-          Logger.log("No need to send over to Secretaries")
-          break;
-        } else {
-            updateSecretaryCharges(e)
-            return
-        }
+    case "Charges":
+    Logger.log(`Range Col = ${e.range.getColumn()}`)
+    Logger.log(`Check Col = ${findHeader("Resolved", Charges)}`)
+    Logger.log(`Cost Col = ${findHeader("Remaining Charge", Charges)}`)
+      if (findHeader("Resolved", Charges) !== (e.range.getColumn()) && findHeader("Remaining Charge", Charges) !== (e.range.getColumn())) {
+        Logger.log("No need to send over to Secretaries")
+        break;
+      } else {
+          updateSecretaryCharges(e)
+          return
+      }
   }
 }
 
@@ -105,7 +108,11 @@ function updateSecretaryCharges(e) {
   for (let i = 2; i < Secretaries.getLastRow(); i++) {
     let testDate = new Date(Secretaries.getRange(i, j, 1, 1).getValue())
     if (!Secretaries.isRowHiddenByFilter(i) && Math.abs(testDate.getTime() - secDate.getTime()) < 10000) {
+          if (e.range.getColumn() == findHeader("Remaining Charge")) {
+          Secretaries.getRange(i, findHeader("Total", Secretaries)).setValue(e.range.getValue())
+          } else if (e.range.getColumn() == findHeader("Resolved")) {
           Secretaries.getRange(i, findHeader("✔Paid", Secretaries)).setValue(e.value)
+          }
           Secretaries.getFilter().remove()
           return
       }
