@@ -27,18 +27,14 @@ function editSwitcher(e) {
         updateFormItems();
         break;
       }
-    case "Charges":
-      if (e.user.getEmail() === "lakintaccmgr@lakerschools.org") {
-        Logger.log("No need to send over to Secretaries")
-        break;
-      } else {
-        if (e.range.getColumn() === findHeader("Resolved", Charges)) {
-          updateSecretaryCharges(e)
-          return
+      case "Charges":
+        if (findHeader("Resolved", Charges) !== e.range.getColumn() || e.user.getEmail() === "lakintaccmgr@lakerschools.org") {
+          Logger.log("No need to send over to Secretaries")
+          break;
         } else {
-          return
+            updateSecretaryCharges(e)
+            return
         }
-      }
   }
 }
 
