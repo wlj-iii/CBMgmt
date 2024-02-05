@@ -123,6 +123,13 @@ function checkOut(e) {
       itemsArr.push("1 charger")
       ACC.addCharger(asgnMail, finalDue)
     }
+
+    SingleAccounts.getRange(accountRow, findHeader("Due (C)", SingleAccounts), 1, 1).setNumberFormat(["MM/DD/YY"])
+    SingleAccounts.getRange(accountRow, findHeader("Due (H)", SingleAccounts), 1, 1).setNumberFormat(["MM/DD/YY"])
+    SingleAccounts.getRange(accountRow, findHeader("Due (1)", SingleAccounts), 1, 1).setNumberFormat(["MM/DD/YY"])
+    SingleAccounts.getRange(accountRow, findHeader("Due (2)", SingleAccounts), 1, 1).setNumberFormat(["MM/DD/YY"])
+    SingleAccounts.getRange(accountRow, findHeader("Date Send Email", SingleAccounts), 1, 1).setNumberFormat(["MM/DD/YY"])
+
   } else {
     let account = ACC.getAccount(asgnMail);
     let accountRow = account.getRow();

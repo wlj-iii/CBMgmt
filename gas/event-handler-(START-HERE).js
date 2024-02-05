@@ -89,9 +89,21 @@ function updateSecretaryCharges(e) {
   let Charges = range.getSheet()
   let Secretaries = SpreadsheetApp.openById("1r1TpiQxqGvsMmyTEi8vW4eSRs9tsG8X2rMdVvMo2XPo").getActiveSheet()
   let thisCharge = Charges.getRange(range.getRow(), 1, 1, Charges.getLastColumn()).getValues()[0]
-  let debtorEmail = ACC.findAccount(thisCharge[0])
-  let debtorFirst = AdminDirectory.Users.get(debtorEmail).name.givenName
-  let debtorLast = AdminDirectory.Users.get(debtorEmail).name.familyName
+  let debtorFirst
+  let debtorLast
+
+  try {
+    let debtorEmail = ACC.findAccount(thisCharge[0])
+    debtorFirst = AdminDirectory.Users.get(debtorEmail).name.givenName
+    debtorLast = AdminDirectory.Users.get(debtorEmail).name.familyName
+  } catch (e) { // in the event a GAdmin pull fails to find their user, it attempts to parse the name from the charge
+    debtorFirst = thisCharge[0].match(/^\w+\s/).toString() // this is obviously not ideal as it can not account for non-hyphenated double first names (Mary Jane Watson)
+    // Logger.log(`raw = ${debtorFirst}`)
+    debtorFirst = debtorFirst.trim()
+    // Logger.log(`First = ${debtorFirst}`)
+    debtorLast = thisCharge[0].replace(debtorFirst, "").trim()
+    // Logger.log(`Last = ${debtorLast}`)
+  };
   if (Secretaries.getFilter()) {
     Secretaries.getFilter().remove()
   }
@@ -105,17 +117,27 @@ function updateSecretaryCharges(e) {
     .setColumnFilterCriteria(findHeader("Description", Secretaries), SpreadsheetApp.newFilterCriteria().whenTextContains(thisCharge[findHeader("Reason", Charges) - 1]).build())
     .setColumnFilterCriteria(j, SpreadsheetApp.newFilterCriteria().whenDateEqualTo(secDate).build())
 
-  for (let i = 2; i < Secretaries.getLastRow(); i++) {
+  let chargeHandled = false;
+  for (let i = 2; i <= Secretaries.getLastRow(); i++) {
     let testDate = new Date(Secretaries.getRange(i, j, 1, 1).getValue())
-    if (!Secretaries.isRowHiddenByFilter(i) && Math.abs(testDate.getTime() - secDate.getTime()) < 10000) {
-          if (e.range.getColumn() == findHeader("Remaining Charge")) {
-          Secretaries.getRange(i, findHeader("Total", Secretaries)).setValue(e.range.getValue())
+    if (!chargeHandled && !Secretaries.isRowHiddenByFilter(i) && Math.abs(testDate.getTime() - secDate.getTime()) < 10000) {
+          if (range.getColumn() == findHeader("Remaining Charge")) {
+            let costRange = Secretaries.getRange(i, findHeader("Total", Secretaries))
+            let oldVal = e.oldValue
+            // Logger.log(`getVal = ${oldVal}`)
+            // Logger.log(`e.oldVal = ${e.oldValue}`)
+            let newVal = e.range.getValue()
+            let diff = Math.abs(oldVal-newVal)
+            Secretaries.getRange(i, Secretaries.getMaxColumns(), 1, 1).getNextDataCell(SpreadsheetApp.Direction.PREVIOUS).offset(0, 1).setValue(`credited $${diff} for returned items on ${dateToTwos(new Date())}`)
+            costRange.setValue(newVal)
           } else if (e.range.getColumn() == findHeader("Resolved")) {
           Secretaries.getRange(i, findHeader("✔Paid", Secretaries)).setValue(e.value)
           }
-          Secretaries.getFilter().remove()
-          return
+          chargeHandled = true
       }
+  }
+  if (Secretaries.getFilter()) {
+    Secretaries.getFilter().remove()
   }
 
 }

@@ -298,6 +298,14 @@ const ACC = new (function () {
 
         if (feeAmount >= standardHspAmount) {
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardHspAmount})`))
+          if (feeAmount-standardHspAmount == 0) {
+            Charges.getRange(feeRow, findHeader("Resolved"), 1, 1).setValue("TRUE")
+          }
+          let fakeEdit = {};
+          fakeEdit.range = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges), 1, 1)
+          fakeEdit.value = fakeEdit.range.getValue()
+          fakeEdit.oldValue = feeAmount
+          updateSecretaryCharges(fakeEdit)
         }
         
       }
@@ -441,7 +449,6 @@ const ACC = new (function () {
 
       if (cbksReport == "No Chromebooks" && hotspotReport == "" && chgsReport.includes("no chargers")) {
         report = "\t" + cbksReport + ", " + chgsReport;
-        this.attemptClose(userMail)
       } else if (cbksReport == "No Chromebooks" && hotspotReport == "") {
         report = "\t" + cbksReport + ", " + chgsReport;
       } else {
@@ -696,6 +703,14 @@ const ACC = new (function () {
 
         if (feeAmount >= standardDevAmount) {
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardDevAmount})`))
+          if (feeAmount-standardDevAmount == 0) {
+            Charges.getRange(feeRow, findHeader("Resolved", Charges), 1, 1).setValue("TRUE")
+          }
+          let fakeEdit = {};
+          fakeEdit.range = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges), 1, 1)
+          fakeEdit.value = fakeEdit.range.getValue()
+          fakeEdit.oldValue = feeAmount
+          updateSecretaryCharges(fakeEdit)
         }
         
       }
@@ -719,7 +734,7 @@ const ACC = new (function () {
     }
   };
 
-  this.attemptClose = (userMail) => {
+  this.attemptClose = (userMail, report) => {
     let currYear = '20' + getSY();
     let syRegex = new RegExp(/(20\d{2})/, "gi")
     let userOU = AdminDirectory.Users.get(userMail).orgUnitPath
@@ -747,32 +762,40 @@ const ACC = new (function () {
       probablyFinal = false;
     }
 
-    let report = ACC.report(userMail)
+    let outstanding = Number(this.outstandingFines(userMail))
+    Logger.log(`Outstanding: ${outstanding}`)
 
     if (!report.includes("No Chromebooks") || !report.includes("no chargers") || report.includes("Lakers ATT")) {
       return
     }
+
+    if (outstanding) { // funny syntax but basically if outstanding != 0
+      return
+    }
     
 
-    if (userYear && currYear > userYear) {
+    if (currYear < userYear) {
+      Logger.log("Student is not old enough to be removed")
+    } else if (userYear && currYear > userYear) {
       Logger.log("Graduated student account is being closed")
-      this._closeAccount(userMail)
+      _closeAccount(userMail)
     } else if (probablyFinal && currYear == userYear) {
       Logger.log("Senior account is being closed: close enough to EOY")
-      this._closeAccount(userMail)
+      _closeAccount(userMail)
     } else if (!userYear) {
       Logger.log("Non-student account is being closed")
-      this._closeAccount(userMail)
+      _closeAccount(userMail)
     }
   };
 
-  this._closeAccount = (userMail) => {
+  const _closeAccount = (userMail) => {
     // return
     let account = this.getAccount(userMail).getRow()
-    SingleAccounts.deleteRow(account)
     
-    let transaction = new Txn(email, "Account Closed", Date(), `${this.fullName(userMail)}`);
+    let transaction = new Txn(userMail, "Account Closed", Date(), `${this.fullName(userMail)}`);
     transaction.commit()
+
+    SingleAccounts.deleteRow(account)
   };
 })();
 

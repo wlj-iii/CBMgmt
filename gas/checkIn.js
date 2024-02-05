@@ -15,44 +15,63 @@ function checkIn(e) {
   .getValues()
   .filter((row) => row[findHeader("CB Part?", Prices) - 1])
   .map((row) => row[0]);
+
   
   if (items.includes("Charger")) {
+    // Logger.log("Is Charger")
     ACC.removeCharger(retMail);
     itemsArr.unshift("1 charger")
-
+    
     let feesFromMIA = Charges.createTextFinder(ACC.fullName(retMail))
-      .matchEntireCell(true)
-      .findAll();
+    .matchEntireCell(true)
+    .findAll();
     let timesRan = 0
-
+    
     for (let i = feesFromMIA.length-1; i >= 0; i--) { // starts with last (oldest) charge first
+      // Logger.log(`Fee #${i+1}`)
       let foundFee = feesFromMIA[i]
       let feeRow = foundFee.getRow();
+      // Logger.log(`Fee #${i+1} in row ${feeRow}`)
       let feeType = Charges.getRange(feeRow, findHeader("Reason", Charges), 1, 1).getValue().toString();
-
+      
       if (timesRan != 0 || !feeType.includes("Charger") || !feeType.includes("missing")) {
-        return
+        // Logger.log(`Fee #${i+1} was not a missing charger`)
       } else {
+        // Logger.log(`Fee #${i+1} was a missing charger`)
         let feeFormRange = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges))
         let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
         let standardChgrAmount = priceItems("Charger")
-
+        
         if (feeAmount >= standardChgrAmount || Math.abs(feeAmount-standardChgrAmount) < 5) { // the $5 wiggle room hopefully accounts for changes in pricing
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardChgrAmount})`))
+          if (feeAmount-standardChgrAmount == 0) {
+            Charges.getRange(feeRow, findHeader("Resolved"), 1, 1).setValue("TRUE")
+          }
+          let fakeEdit = {};
+          fakeEdit.range = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges), 1, 1)
+          fakeEdit.value = fakeEdit.range.getValue()
+          fakeEdit.oldValue = feeAmount
+          updateSecretaryCharges(fakeEdit)
+          // Logger.log(`Fee #${i+1} was adjusted by ${feeAmount-standardChgrAmount}`)
         }
-        
         timesRan++
+        
       }
+      // Logger.log(`Fee #${i+1} completed`)
     }
   }
   
+  Logger.log("Charger Done")
   if (items.includes("Hotspot") && hsAssetTag !== "") {
+    // Logger.log("Is Hotspot")
     ACC.removeStuHotspot(hsAssetTag);
     ACC.removeBulkHotspot(hsAssetTag)
     itemsArr.unshift(hsAssetTag)
   }
+  // Logger.log("Hotspot Done")
   
   if (cbAssetTag != "") { // Order here is specific: removes from account, then reports newly cleared account in thx email, then moves in GAdmin
+    // Logger.log("Is Chromebook")
     // Logger.log("starting legion process " + cbAssetTag)
     try {
       ACC.removeStuDevice(cbAssetTag);
@@ -60,7 +79,7 @@ function checkIn(e) {
     } catch (e) {
       MAIL.error(e);
     }
-
+    
     MAIL.inbound(retMail, items, cbAssetTag)
     
     try {
@@ -77,8 +96,10 @@ function checkIn(e) {
     }
     itemsArr.unshift(cbAssetTag)
   }
-
+  // Logger.log("Chromebook Done")
+  
   let transaction = new Txn(retMail, "Healthy Check In", timestamp, itemsArr)
+  // Logger.log("Txn Began")
   
   if (faulties != "") {
     let cost = priceItems(faulties, retMail, retCategory)
@@ -90,6 +111,17 @@ function checkIn(e) {
   }
   
   transaction.commit()
+  // Logger.log("Txn Done")
+  
+  let report = ACC.report(retMail)
+  Logger.log("Testing Acc")
+  if (Number(ACC.outstandingFines(retMail))) {
+    Logger.log("Not trying Acc Close")
+  } else {
+    Logger.log("Trying Acc Close")
+    ACC.attemptClose(retMail, report)
+  }
   
   latestFirst(CheckIn);
+  // Logger.log("CheckIn sorted")
 }

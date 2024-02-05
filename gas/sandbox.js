@@ -19,7 +19,7 @@ function iShouldntBeHere() {
     // Logger.log(temp)
   // ACC.totalPoints('ascaddan2022@lakerschools.org', 'Unforeseeable Accident')
   // ACC.addCharger('ascaddan2022@lakerschools.org', dateToTwos(new Date()))
-  // ACC.charge('ascaddan2022@lakerschools.org', "missing", "Chromebook entirely", 235, "Overdue", "Lakers 1101")
+  ACC.charge('ascaddan2022@lakerschools.org', "missing", "Chromebook entirely", 235, "Overdue", "Lakers 1101")
   // ACC.removeBulkDevice(`${cb}`)
   // Logger.log(ACC.outstandingFines(testEmail))/
   // Logger.log(ACC.spanReport(testEmail))
@@ -41,10 +41,11 @@ function iShouldntBeHere() {
 
 
 function jShouldntBeHere() {
-  let temp = new Date()
-  temp.setHours(16)
-  temp.setMinutes(0)
-  temp.setSeconds(0)
-  temp.setMilliseconds(0)
-  Logger.log(temp.toLocaleString())
+  let temp = Number(SingleAccounts.getRange(11, 3, 1, 1).getValue())
+  if (!temp) {
+    Logger.log("works")
+  } else {
+    Logger.log("doesnt")
+  }
+  Logger.log(temp)
 };

@@ -33,7 +33,7 @@ const LGN = new (function () {
       return;
     }
     let dataRow = [device.annotatedAssetId]
-    Logger.log("Moving " + dataRow[0] + " to " + LegionSheet.getName().toString())
+    // Logger.log("Moving " + dataRow[0] + " to " + LegionSheet.getName().toString())
 
     LegionSheet.appendRow(dataRow).getRange("B2:B").clear();
     LegionSheet.moveRows(LegionSheet.getRange(LegionSheet.getLastRow(), 1, 1, 1), 2)
