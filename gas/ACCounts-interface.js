@@ -701,15 +701,22 @@ const ACC = new (function () {
         let feeAmount = new Number(feeFormRange.getFormula().toString().match(/\d+\)$/)[0].match(/\d+/)[0]);
         let standardDevAmount = priceItems("Chromebook entirely")
 
+        Logger.log(`feeAmount = ${feeAmount}`)
+        Logger.log(`standardDevAmount = ${standardDevAmount}`)
+
         if (feeAmount >= standardDevAmount) {
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardDevAmount})`))
+          let fakeEdit = {};
           if (feeAmount-standardDevAmount == 0) {
             Charges.getRange(feeRow, findHeader("Resolved", Charges), 1, 1).setValue("TRUE")
-          }
-          let fakeEdit = {};
+          fakeEdit.range = Charges.getRange(feeRow, findHeader("Resolved", Charges), 1, 1)
+          fakeEdit.oldValue = "FALSE"
+          } else {
           fakeEdit.range = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges), 1, 1)
-          fakeEdit.value = fakeEdit.range.getValue()
           fakeEdit.oldValue = feeAmount
+          }
+          fakeEdit.value = fakeEdit.range.getValue()
+          Logger.log(fakeEdit)
           updateSecretaryCharges(fakeEdit)
         }
         
@@ -739,8 +746,8 @@ const ACC = new (function () {
     let syRegex = new RegExp(/(20\d{2})/, "gi")
     let userOU = AdminDirectory.Users.get(userMail).orgUnitPath
     let userYear = userOU.match(syRegex)
-    Logger.log(`Current Year is ${currYear}`)
-    Logger.log(`User Year is ${userYear}`)
+    // Logger.log(`Current Year is ${currYear}`)
+    // Logger.log(`User Year is ${userYear}`)
     let probablyFinal
 
     if(userOU.includes(currYear)) {

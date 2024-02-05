@@ -61,7 +61,7 @@ function checkIn(e) {
     }
   }
   
-  Logger.log("Charger Done")
+  // Logger.log("Charger Done")
   if (items.includes("Hotspot") && hsAssetTag !== "") {
     // Logger.log("Is Hotspot")
     ACC.removeStuHotspot(hsAssetTag);
@@ -114,11 +114,11 @@ function checkIn(e) {
   // Logger.log("Txn Done")
   
   let report = ACC.report(retMail)
-  Logger.log("Testing Acc")
+  // Logger.log("Testing Acc")
   if (Number(ACC.outstandingFines(retMail))) {
-    Logger.log("Not trying Acc Close")
+    // Logger.log("Not trying Acc Close")
   } else {
-    Logger.log("Trying Acc Close")
+    // Logger.log(`Trying Acc Close because ${Number(ACC.outstandingFines(retMail))}`)
     ACC.attemptClose(retMail, report)
   }
   

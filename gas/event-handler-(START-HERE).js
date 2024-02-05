@@ -28,9 +28,9 @@ function editSwitcher(e) {
         break;
       }
     case "Charges":
-    Logger.log(`Range Col = ${e.range.getColumn()}`)
-    Logger.log(`Check Col = ${findHeader("Resolved", Charges)}`)
-    Logger.log(`Cost Col = ${findHeader("Remaining Charge", Charges)}`)
+    // Logger.log(`Range Col = ${e.range.getColumn()}`)
+    // Logger.log(`Check Col = ${findHeader("Resolved", Charges)}`)
+    // Logger.log(`Cost Col = ${findHeader("Remaining Charge", Charges)}`)
       if (findHeader("Resolved", Charges) !== (e.range.getColumn()) && findHeader("Remaining Charge", Charges) !== (e.range.getColumn())) {
         Logger.log("No need to send over to Secretaries")
         break;
@@ -119,22 +119,27 @@ function updateSecretaryCharges(e) {
 
   let chargeHandled = false;
   for (let i = 2; i <= Secretaries.getLastRow(); i++) {
-    let testDate = new Date(Secretaries.getRange(i, j, 1, 1).getValue())
-    if (!chargeHandled && !Secretaries.isRowHiddenByFilter(i) && Math.abs(testDate.getTime() - secDate.getTime()) < 10000) {
-          if (range.getColumn() == findHeader("Remaining Charge")) {
-            let costRange = Secretaries.getRange(i, findHeader("Total", Secretaries))
+    if (chargeHandled) break;
+    Logger.log(`i (Sec row) = ${i}`)
+      let testDate = new Date(Secretaries.getRange(i, j, 1, 1).getValue())
+      if (!Secretaries.isRowHiddenByFilter(i) && Math.abs(testDate.getTime() - secDate.getTime()) < 10000) {
+        if (range.getColumn() == findHeader("Remaining Charge", Charges)) {
+          Logger.log(`column = ${range.getColumn()}`)
+          let costRange = Secretaries.getRange(i, findHeader("Total", Secretaries))
             let oldVal = e.oldValue
-            // Logger.log(`getVal = ${oldVal}`)
-            // Logger.log(`e.oldVal = ${e.oldValue}`)
+            Logger.log(`Old Val = ${e.oldValue}`)
             let newVal = e.range.getValue()
+            Logger.log(`e.Val = ${e.value}`)
+            Logger.log(`New Val = ${newVal}`)
             let diff = Math.abs(oldVal-newVal)
+            Logger.log(`Diff = ${diff}`)
             Secretaries.getRange(i, Secretaries.getMaxColumns(), 1, 1).getNextDataCell(SpreadsheetApp.Direction.PREVIOUS).offset(0, 1).setValue(`credited $${diff} for returned items on ${dateToTwos(new Date())}`)
             costRange.setValue(newVal)
-          } else if (e.range.getColumn() == findHeader("Resolved")) {
-          Secretaries.getRange(i, findHeader("✔Paid", Secretaries)).setValue(e.value)
+          } else if (range.getColumn() == findHeader("Resolved", Charges)) {
+            Secretaries.getRange(i, findHeader("✔Paid", Secretaries)).setValue(e.value)
           }
           chargeHandled = true
-      }
+        }
   }
   if (Secretaries.getFilter()) {
     Secretaries.getFilter().remove()
