@@ -81,7 +81,7 @@ function checkOut(e) {
     
       if (splitDevs.length > 3) {
         try {
-          throw new Error("User has too many devices out!");
+          throw new Error(`${asgnMail} has too many devices out!`);
         } catch (e) {
           MAIL.error(e);
         }
