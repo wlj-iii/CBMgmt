@@ -83,7 +83,7 @@ function checkOut(e) {
         try {
           throw new Error(`${asgnMail} has too many devices out!`);
         } catch (e) {
-          MAIL.error(e);
+          MAIL.userError(e);
         }
       } else {
         let newDevs = splitDevs.flat();
@@ -114,7 +114,8 @@ function checkOut(e) {
         
         itemsArr.push(hsAssetTag)
       } catch (e) {
-        MAIL.error(e);
+        MAIL.userError(e);
+        MAIL.scriptError(e);
         itemsArr.push(`${hsAssetTag}(fail)`)
       }
     }
@@ -183,7 +184,7 @@ function checkOut(e) {
         
         itemsArr.push(hsAssetTag)
       } catch (e) {
-        MAIL.error(e);
+        MAIL.scriptError(e);
         itemsArr.push(`${hsAssetTag}(fail)`)
       }
     }

@@ -53,7 +53,20 @@ const MAIL = new (function () {
     }
   };
 
-  this.error = (e) => {
+  this.userError = (e) => {
+    if (!aliases.includes(maskAcc)) {
+      GmailApp.sendEmail(me, 'Alias not found', 'You should check the script and the account\'s settings to make sure you spelled the alias address correctly.');
+    } else {
+      let maskIndex = aliases.indexOf(maskAcc);
+      GmailApp.sendEmail(redirect, "CBMgmt is complaining", e, {
+        'from': aliases[maskIndex],
+        'name': maskName,
+        'replyTo': redirect,
+      })
+    }
+  }
+  
+  this.scriptError = (e) => {
     if (!aliases.includes(maskAcc)) {
       GmailApp.sendEmail(me, 'Alias not found', 'You should check the script and the account\'s settings to make sure you spelled the alias address correctly.');
     } else {
@@ -79,7 +92,8 @@ const MAIL = new (function () {
     let spanReport = ACC.spanReport(retMail)
     let device = findDevice(cbAssetTag)
     if (device.toString().includes(' was not found')) {
-      MAIL.error(`${cbAssetTag} was not found`);
+      MAIL.userError(`${cbAssetTag} was not found`);
+      MAIL.scriptError(`${cbAssetTag} was not found`);
       return;
     }
     let asgnMail = device.annotatedUser
