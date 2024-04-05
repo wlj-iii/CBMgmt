@@ -45,7 +45,7 @@ function checkIn(e) {
         if (feeAmount >= standardChgrAmount || Math.abs(feeAmount-standardChgrAmount) < 5) { // the $5 wiggle room hopefully accounts for changes in pricing
           feeFormRange.setFormula(feeFormRange.getFormula().toString().replace(/\d+\)$/, `${feeAmount-standardChgrAmount})`))
           if (feeAmount-standardChgrAmount == 0) {
-            Charges.getRange(feeRow, findHeader("Resolved"), 1, 1).setValue("TRUE")
+            Charges.getRange(feeRow, findHeader("Resolved", Charges), 1, 1).setValue("TRUE")
           }
           let fakeEdit = {};
           fakeEdit.range = Charges.getRange(feeRow, findHeader("Remaining Charge", Charges), 1, 1)
