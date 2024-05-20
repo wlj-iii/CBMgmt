@@ -775,14 +775,19 @@ const ACC = new (function () {
     if (!report.includes("No Chromebooks") || !report.includes("no chargers") || report.includes("Lakers ATT")) {
       return
     }
-
-    if (outstanding) { // funny syntax but basically if outstanding != 0
-      return
-    }
     
+    let currentPtCell = this.getAccount(userMail).getCell(
+      1,
+      findHeader("YTD Points", SingleAccounts)
+    );
+    let currentPoints = currentPtCell.getValue();
 
     if (currYear < userYear) {
       Logger.log("Student is not old enough to be removed")
+    } else if (outstanding) { // funny syntax but basically if outstanding != 0
+      Logger.log("Account still has items checked out")
+    } else if (currentPoints) {
+      Logger.log("Account still has points assigned")
     } else if (userYear && currYear > userYear) {
       Logger.log("Graduated student account is being closed")
       _closeAccount(userMail)
