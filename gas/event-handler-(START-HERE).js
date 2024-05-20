@@ -5,6 +5,8 @@ function onOpening() { // if this is titled onOpen, it fires twice, and the firs
     .addItem("Check Out Asset", "showCheckOutForm")
     .addItem("Mark Asset Missing", "showMiaForm")
     .addItem("Fix-It Ticket", "showFixItForm")
+    .addSeparator()
+    .addItem("Close Account", "manualCloseAcct")
     .addItem("MASS CHECK OUT", "massCheckOut")
     .addToUi();
 }
@@ -216,3 +218,31 @@ function formsSorter() {
 
 
 }
+
+
+function manualCloseAcct () {
+  var ui = SpreadsheetApp.getUi();
+
+  // Create input box with caption 'Enter...'
+    var response = SpreadsheetApp.getUi().prompt('Enter Account\'s Full Email:')
+
+  /** If/Then/Else defining reaction to 'Enter' prompt
+   * If (they pressed the OK button)
+   */
+  if (response.getSelectedButton() == ui.Button.OK)
+    // Then (Create spreadsheet "if_text_contains_'inputted_text'" filter criteria)
+      {
+      let acc = response.getResponseText()
+
+      if (acc.toString().includes("@lakerschools.org")) {
+        let report = ACC.report(acc)
+  
+        ACC.attemptClose(acc, report)
+      } else {
+        Logger.log("Attempted to close non-Lakers account")
+      }
+
+
+     }
+    else { Logger.log('exited'); } // For when they click out
+};

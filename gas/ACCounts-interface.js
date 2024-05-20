@@ -912,10 +912,10 @@ function dailyCheckDue() {
       }
     }
     let devs = account.filter((item) => item.toString().search(cbRegEx) > -1)
-    // devs.forEach(
-      // (foundCB) => {LGN.missing(foundCB.toString())} // is there a reason this is not on?
-      // (foundCB) => {Logger.log(foundCB.toString())}
-      // )
+    devs.forEach(
+        (foundCB) => {LGN.missing(foundCB.toString())} // is there a reason this is not on?
+        // (foundCB) => {Logger.log(foundCB.toString())}
+      )
     let hs = account.filter((item) => item.toString().search(hsRegEx) > -1)
     hs.forEach(
       (h) => {devs.unshift(h)}
