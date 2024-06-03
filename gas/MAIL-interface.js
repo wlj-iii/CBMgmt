@@ -61,7 +61,7 @@ const MAIL = new (function () {
       GmailApp.sendEmail(redirect, "CBMgmt is complaining", e, {
         'from': aliases[maskIndex],
         'name': maskName,
-        'replyTo': 'williamljoslyn@gmail.com',
+        'replyTo': redirect,
       })
     }
   }

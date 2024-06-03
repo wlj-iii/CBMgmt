@@ -677,7 +677,7 @@ const ACC = new (function () {
         foundUsr,
         foundDev + 2,
         1,
-        SingleAccounts.getLastColumn() - foundDev + 1
+        SingleAccounts.getLastColumn() - ( foundDev + 1 )
       );
       if (nextDev.isBlank()) {
         nowDev.setValues([["", ""]]);

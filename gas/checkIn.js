@@ -92,7 +92,7 @@ function checkIn(e) {
         LGN.reserves(cbAssetTag, explanation);
       }
     } catch (e) {
-      MAIL.error(e);
+      MAIL.scriptError(e);
     }
     itemsArr.unshift(cbAssetTag)
   }
