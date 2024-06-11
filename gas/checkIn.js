@@ -1,4 +1,5 @@
 const CheckIn = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Intake Form");
+const MassCheckIn = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("V-Day");
 
 function checkIn(e) {
   let namedValues = e.namedValues;
@@ -124,4 +125,50 @@ function checkIn(e) {
   
   latestFirst(CheckIn);
   // Logger.log("CheckIn sorted")
+}
+
+function massCheckIn() {
+  return
+  let ui = SpreadsheetApp.getUi();
+
+  var response = SpreadsheetApp.getUi().prompt('Enter email of returning Tech Dept member:')
+  if (response.getSelectedButton() !== ui.Button.OK)
+      {
+      const selectedDate = response.getResponseText();
+      }
+
+
+  let checkInForm = FormApp.openByUrl(CheckIn.getFormUrl())
+  let heroes = MassCheckIn.getDataRange()
+  let heroVals = heroes.getValues()
+  
+  let items = checkInForm.getItems();
+  
+  let titles = [];
+  items.forEach((item) => titles.push(item.getTitle()));
+  let mailItem = items[titles.indexOf("Returner's Email")].asTextItem()
+  let itemsIn = items[titles.indexOf("Returning Items")].asCheckboxItem()
+  let retCatItem = items[titles.indexOf("Return Category")].asMultipleChoiceItem()
+  
+  
+  
+  for (let i = draftedVals.length; i > 1; i--) {
+    let txn = checkInForm.createResponse()
+    
+    let userMail = draftedVals[i - 1][findHeader("User Email", MassCheckOut) - 1]
+    let newDevice = draftedVals[i - 1][findHeader("Assigned Chromebook", MassCheckOut) - 1]
+    let itemsOutList = ["Chromebook entirely", "Charger"];
+    let dueDate = "End of Year"
+
+    userMail = SpreadsheetApp.getUi
+
+    let mailResponse = mailItem.createResponse(userMail)
+    let devResponse = cbItem.createResponse(newDevice)
+    let itemsOutResponse = itemsOut.createResponse(itemsOutList)
+    let dueResponse = dueDateItem.createResponse(dueDate)
+
+    txn.withItemResponse(mailResponse).withItemResponse(devResponse).withItemResponse(itemsOutResponse).withItemResponse(dueResponse).submit()
+
+    MassCheckOut.deleteRow(i)
+  }
 }

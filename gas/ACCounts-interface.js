@@ -33,7 +33,13 @@ const ACC = new (function () {
         return e;
       });
 
-    let userOu = AdminDirectory.Users.get(email).orgUnitPath.toLowerCase();
+    let userOu;
+    try {
+      userOu = AdminDirectory.Users.get(email).orgUnitPath.toLowerCase();
+    } catch (e) {
+      MAIL.scriptError(`Problem getting OU from ${email}:\n` + e)
+      return false
+    }
 
     // This is currently built to consider anyone a bulk user unless they have the single-device tag in their OU path
     // To flip this functionality (default to single-), switch the 'if(singleOUs.some(' to read 'if (bulkOUs.some(' AND swap the false and true values around
@@ -61,7 +67,13 @@ const ACC = new (function () {
         return e;
       });
 
-    let userOu = AdminDirectory.Users.get(email).orgUnitPath.toLowerCase();
+      let userOu;
+      try {
+        userOu = AdminDirectory.Users.get(email).orgUnitPath.toLowerCase();
+      } catch (e) {
+        MAIL.scriptError(`Problem getting OU from ${email}:\n` + e)
+        return true
+      }
 
     if (payingOUs.some((v) => userOu.includes(v))) {
       return true;
@@ -131,18 +143,13 @@ const ACC = new (function () {
       // Logger.log(accountRange);
     } else {
       try {
-        accountRow = SingleAccounts.getRange(
-          2,
-          1,
-          SingleAccounts.getLastRow(),
-          1
-        )
+        accountRow = SingleAccounts.getRange(2, 1, SingleAccounts.getLastRow(), 1)
           .createTextFinder(email)
           .findNext()
           .getRow();
       } catch (e) {
         Logger.log("Creating account for " + AdminDirectory.Users.get(email).name.fullName)
-        accountRow = this.createSingleAcc(email).getRow();
+        // accountRow = this.createSingleAcc(email).getRow();
       }
       accountRange = SingleAccounts.getRange(
         accountRow,
@@ -184,8 +191,10 @@ const ACC = new (function () {
         .trim()
         .split(",")
         .map((el) => {
-          let date = new Date(el?.toString().trim().slice(0, 6) + "20" + el.toString().slice(6)).getTime()
-          return date // array does not sort properly unless dates recieve full year and are converted to epoch
+          if (typeof el == Date) { return el.getTime() }
+          if (date.toString().includes("NaN")) {
+            return new Date(DatesSheet.createTextFinder('End of Year').findNext().offset(0, 1).getValue())
+          } else return date // array does not sort properly unless dates recieve full year and are converted to epoch
           })
         .sort()
         .reverse();
@@ -226,28 +235,34 @@ const ACC = new (function () {
       // Logger.log("dListCell = " + datesList.getA1Notation())
       // Logger.log("dList = " + datesList.getValue().toString())
       let currentDates = datesList
-      .getValue()
-      .toString()
-      .trim()
-      .split(",")
-      .map((el) => {
-        let date = new Date(el
-            /*
-            */
-            ?.toString()
-            .trim()
-            .slice(0, 6)
-          + "20"
-          + el
-            .toString()
-            .trim()
-            .slice(6)
-        ).getTime()
-        return date // array does not sort properly unless dates recieve full year and are converted to epoch
-      })
-      .sort()
+        .getValue()
+        .toString()
+        .trim()
+
+
+        if (!currentDates) { // null case
+          currentDates = [];
+          currentDates.length = 0;
+        } else {
+          currentDates = currentDates
+          .split(",")
+          .map((el) => {
+            if (el.toString().length > 8 ) { return new Date(el).getTime() } // single raw date case, otherwise list of pre-formatted
+            let date = new Date(el
+              ?.toString()
+              .trim()
+              .slice(0, 6)
+              + "20"
+              + el
+              .toString()
+              .trim()
+              .slice(6)
+            ).getTime()
+            return date // array does not sort properly unless dates recieve full year and are converted to epoch
+          })
+        }
       
-      currentDates.push(new Date(dueDate).getTime());
+      currentDates.sort().push(new Date(dueDate).getTime());
       
       datesList.setValue(
         currentDates
@@ -258,9 +273,7 @@ const ACC = new (function () {
         .toString()
         .trim())
         .setNumberFormat(["MM/DD/YY"]);
-        /*
-        */
-      Logger.log("current dates:" + `\n` + currentDates)
+      // Logger.log(`current dates:\n` + currentDates)
       return
     } else {
       // let chgsCol = findHeader("Chargers Out", BulkAccounts);
@@ -677,7 +690,7 @@ const ACC = new (function () {
         foundUsr,
         foundDev + 2,
         1,
-        SingleAccounts.getLastColumn() - ( foundDev + 1 )
+        SingleAccounts.getLastColumn() - foundDev + 1
       );
       if (nextDev.isBlank()) {
         nowDev.setValues([["", ""]]);
@@ -872,140 +885,6 @@ function priceItems(items, userMail, retCategory) {
     .map((item) => _priceItem(item, totalPoints, currPoints))
     .reduce((a, b) => a + b);
   return totalPrice;
-}
-
-
-function dailyCheckDue() {
-  var today = new Date()
-  var tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  var oneWeek = new Date(today)
-  oneWeek.setDate(oneWeek.getDate() + 7)
-  today = toDueString(today);
-  tomorrow = toDueString(tomorrow);
-  oneWeek = toDueString(oneWeek);
-
-  // Logger.log(today)
-  // Logger.log(tomorrow)
-  // Logger.log(oneWeek)
-
-  let pastDue = dueTodaysList(today); // Bc remember, we aren't sending emails in the morning if a device is due that day, so the list of devices due today will go out only after they are past due
-  let dueTomorrow = daysAccsList(tomorrow);
-  let dueOneWeek = daysAccsList(oneWeek);
-  dueTomorrow.forEach((account) => MAIL.dueSoon(account))
-  dueOneWeek.forEach((account) => MAIL.dueSoon(account))
-  
-  pastDue.forEach((account) => { // pastDue is a 2D array of accounts, structured as below
-    // accounts are returned with structure ['ascad@ls.org', '1 charger(s)', 'Lakers ATT001', 'Lakers 0327']
-    let hsRegEx = new RegExp(/(Lakers ATT\d{3})/, "gi")
-    let cbRegEx = new RegExp(/(Lakers \w{4})/, "gi")
-    let cost;
-    let userMail = account.shift()
-    let chargerPos = account.toString().indexOf('charger')
-    let numChgsOut = 0;
-    if (chargerPos !== -1) {
-      // Logger.log(account.toString())
-      // Logger.log(account.toString().substring(chargerPos - 3, chargerPos - 1))
-      numChgsOut = Number(account.toString().substring(chargerPos - 3, chargerPos - 1).replaceAll(',', ""))
-      // Logger.log("#chgs = " + numChgsOut)
-      // Logger.log("account = " + account)
-      account.shift()
-      // Logger.log("account = " + account)
-      for (let i = 0; i < numChgsOut; i++) {
-        account.unshift('Charger')
-        // Logger.log("account = " + account)
-      }
-    }
-    let devs = account.filter((item) => item.toString().search(cbRegEx) > -1)
-    devs.forEach(
-        (foundCB) => {LGN.missing(foundCB.toString())} // is there a reason this is not on?
-        // (foundCB) => {Logger.log(foundCB.toString())}
-      )
-    let hs = account.filter((item) => item.toString().search(hsRegEx) > -1)
-    hs.forEach(
-      (h) => {devs.unshift(h)}
-    )
-    items = account.toString().replace(hsRegEx, 'Hotspot').replace(cbRegEx, 'Chromebook entirely')
-    // Logger.log(items)
-    
-
-    cost = priceItems(items, userMail, "Overdue")
-    // Logger.log(cost)
-
-    ACC.charge(userMail, 'missing', items, cost, "Overdue", devs)
-    let transaction = new Txn(userMail, "Overdue Items", Date(), account)
-    if (cost > 0) {
-      transaction.invoiceSent = true
-    }
-    transaction.commit()
-  })
-
-  if (new Date().getMonth() != 7 && new Date().getDate() != 1) {
-    return
-  } else {
-    // means today is august first
-    let newSY = new Number(getSY());
-    let oldSY = newSY-1;
-    let oldSyFull = 2000+oldSY
-    
-    let potentialGrads = SingleAccounts.createTextFinder(`${oldSyFull}@lakerschools.org`).matchEntireCell(false).findAll()
-    potentialGrads.forEach((rng) => {
-      let userRow = rng.getRow()
-      let userMail = SingleAccounts.getRange(userRow, 1, 1, 1).getValue();
-      ACC.attemptClose(userMail)
-    })
-
-  }
-
-}
-
-function daysAccsList(day) {
-  // Logger.log(`listing for ${day}`)
-  let dueOnDay = SingleAccounts.createTextFinder(day).matchEntireCell(false).findAll()
-  // Logger.log(dueOnDay.length)
-
-  var accountsList = [];
-  for (let i = 0; i < dueOnDay.length; i++) {
-    let itemDue = dueOnDay[i]
-    let itemRow = itemDue.getRow()
-    let itemAcc = SingleAccounts.getRange(itemRow, 1, 1, 1).getValue();
-    accountsList.push(itemAcc)
-    // Logger.log(accountsList)
-  }
-
-  // TODO dueOnDay = BulkAccounts.createTectFinder etc etc
-
-  
-  accountsList = [...new Set(accountsList)]
-  return accountsList
-}
-
-function dueTodaysList(today) {
-  var todaysMailingList = [];
-  
-  let todaysStuList = SingleAccounts.createTextFinder(today).matchEntireCell(false).findAll()
-  todaysStuList.forEach((todayRng) => {
-    let itemRow = todayRng.getRow()
-    let itemAcc = SingleAccounts.getRange(itemRow, 1, 1, 1).getValue();
-    let mailTo = [itemAcc]
-    if (!todaysMailingList.toString().includes(mailTo)) {
-      todaysMailingList.push(mailTo)
-    }
-    let itemName = todayRng.offset(0, -1).getValue();
-    if (typeof itemName !== 'string') { // then must be number, usu. only used for number of chargers as they do not have names :(
-      let numChargersToday = countInstances(todayRng.getValue().toString(), today)
-      if (numChargersToday == 0) { numChargersToday = 1 } // this is a tricky thing, but bc the date was found with text finder there is at least one, but if there is only one when toString-ed it shows as a JS Date Object format, which throws the count instances thing off. Basically one is found but cannot be counted, so we add it back
-
-      itemName = numChargersToday.toString() + ' charger(s)'
-    }
-    // Logger.log("itemName = " + itemName)
-    let accountsList = todaysMailingList.map(({ [0]: v }) => v)
-    let currentAccountIndex = accountsList.indexOf(itemAcc)
-    let currentAccount = todaysMailingList[currentAccountIndex]
-    currentAccount.push(itemName)
-  })
-
-  return todaysMailingList
 }
 
 function toDueString(date) {
